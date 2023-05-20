@@ -1,26 +1,19 @@
 const express = require('express')
 const chatRouter = express.Router()
-const {fetchChatRooms,createChatRoom,createChat} = require('./chat.controller')
+const {fetchChatRooms,leaveChatRoom,joinChatRoom,createChatRoom,createChat,fetchChatRoomById} = require('./chat.controller')
 
 chatRouter.post('/chatrooms',fetchChatRooms)
 chatRouter.post('/chatrooms/create',createChatRoom)
+chatRouter.post('/chatrooms/:roomId',fetchChatRoomById)
+chatRouter.post('/chatrooms/:roomId/join',joinChatRoom)
+chatRouter.post('/chatrooms/:roomId/leave',leaveChatRoom)
 
 chatRouter.post('/chatrooms/:roomId/chat/send',createChat)
+// chatRouter.post('/chatrooms/:roomId/chat',fetchChat)
+
+// chatRouter.post('/private',fetchPrivateChat)
+// chatRouter.post('/private/send',createPrivateChat)
+
+// chatRouter.post('/chats',fetchAllChats)
 
 module.exports = {chatRouter}
-
-// Chat Room Management:
-
-// /chatrooms - Retrieve a list of available chat rooms.
-// /chatrooms/create - Create a new chat room.
-// /chatrooms/:roomId - Retrieve information about a specific chat room.
-// /chatrooms/:roomId/join - Allow users to join a chat room.
-// /chatrooms/:roomId/leave - Allow users to leave a chat room.
-// Messaging:
-
-// /chatrooms/:roomId/messages - Retrieve the messages for a specific chat room.
-// /chatrooms/:roomId/messages/send - Send a message to a specific chat room.
-// Private Messaging:
-
-// /messages/private - Retrieve private messages between two users.
-// /messages/private/send - Send a private message to another user.

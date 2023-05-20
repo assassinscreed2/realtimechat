@@ -72,5 +72,66 @@ module.exports = {
             console.log(e)
             res.json({e})
         }
+    },
+
+    // fetch room by id
+    fetchChatRoomById: async (req,res) => {
+        try{
+            const roomId = req.params.roomId
+            const snapshot = await db.collection('chatroom').doc(roomId).collection('messages').get()
+            const messages = []
+            snapshot.forEach((doc)=>{
+                messages.push(doc.data())
+            })
+
+            res.status(200).json({message:messages})
+        }catch(e){
+            console.log(e)
+            return res.json({e})
+        }
+    },
+
+    // join the chat room
+    joinChatRoom: async (req,res) => {
+        try{
+            const roomId = req.params.roomId
+            const userId = req.body.userId
+            const chatRoomRef = db.collection('chatroom').doc(roomId)
+            const chatRoomData = await chatRoomRef.get()
+            
+            const participants = chatRoomData.data().participants
+            participants.push(userId)
+
+            await chatRoomRef.update({participants})
+
+            res.status(200).json({
+                message:"User joined the chat room"
+            })
+
+        }catch(e){
+            console.log(e)
+            return res.json({e})
+        }
+    },
+
+    // leave chat room
+    leaveChatRoom: async (req,res) => {
+        try{
+            const roomId = req.params.roomId
+            const userId = req.body.userId
+
+            const chatRoomRef = db.collection('chatroom').doc(roomId)
+            const chatRoomData = await chatRoomRef.get()
+
+            const participants = chatRoomData.data().participants
+            const newParticipants = participants.filter((user)=>user !== userId)
+
+            await chatRoomRef.update({participants:[...newParticipants]})
+
+            res.status(200).json({message:"user leaved the chatroom"})
+        }catch(e){
+            console.log(e)
+            res.json({e})
+        }
     }
 }
