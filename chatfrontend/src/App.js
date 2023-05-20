@@ -4,6 +4,8 @@ import { Container, Typography,Paper, TextField, Button, List, ListItem, ListIte
 import SearchIcon from '@mui/icons-material/Search';
 import { TextInput } from "./TextInput.js";
 import { MessageLeft, MessageRight } from "./Message";
+import firebase from "firebase/app"
+import {getAuth, signInWithPopup, GoogleAuthProvider} from "firebase/auth"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -46,6 +48,16 @@ function App(){
     { id: 3, name: 'User 3' },
     { id: 4, name: 'User 4' },
   ]);
+
+  const googleLogin = () => {
+    const auth = getAuth()
+    const provider = new GoogleAuthProvider()
+    signInWithPopup(auth, provider).then((result)=> {
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      console.log(credential)
+      console.log(result)
+    }).catch(e=>console.log(e))
+  }
 
   const [searchText, setSearchText] = useState('');
 
@@ -104,7 +116,7 @@ function App(){
         </Grid>
         <Grid item container direction = "column" sm={8}>
           <Grid item>
-            <Button>Create Group</Button>
+            <Button onClick={googleLogin}>Create Group</Button>
           </Grid>
           <Grid container direction="column">
           <Grid item>
