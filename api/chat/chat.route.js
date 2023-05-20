@@ -1,19 +1,18 @@
 const express = require('express')
 const chatRouter = express.Router()
-const {fetchChatRooms,leaveChatRoom,joinChatRoom,createChatRoom,createChat,fetchChatRoomById} = require('./chat.controller')
+const {fetchChatRooms,sendPrivateChat,fetchAllChats,fetchPrivateChat,createPrivateChat,leaveChatRoom,joinChatRoom,createChatRoom,createChat,fetchChatByRoomId} = require('./chat.controller')
 
 chatRouter.post('/chatrooms',fetchChatRooms)
 chatRouter.post('/chatrooms/create',createChatRoom)
-chatRouter.post('/chatrooms/:roomId',fetchChatRoomById)
 chatRouter.post('/chatrooms/:roomId/join',joinChatRoom)
 chatRouter.post('/chatrooms/:roomId/leave',leaveChatRoom)
 
 chatRouter.post('/chatrooms/:roomId/chat/send',createChat)
-// chatRouter.post('/chatrooms/:roomId/chat',fetchChat)
+chatRouter.post('/chatrooms/:roomId/chat',fetchChatByRoomId)
 
-// chatRouter.post('/private',fetchPrivateChat)
-// chatRouter.post('/private/send',createPrivateChat)
+chatRouter.post('/private/create',createPrivateChat)
+chatRouter.post('/private/send',sendPrivateChat)
 
-// chatRouter.post('/chats',fetchAllChats)
+chatRouter.post('/chats',fetchAllChats)
 
 module.exports = {chatRouter}
