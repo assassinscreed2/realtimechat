@@ -11,7 +11,7 @@ chatRouter.post('/chatrooms/:roomId/chat/send',createChat)
 chatRouter.post('/chatrooms/:roomId/chat',fetchChatByRoomId)
 
 chatRouter.post('/private/create',createPrivateChat)
-chatRouter.post('/private/send',sendPrivateChat)
+chatRouter.post('/:roomId/private/send',sendPrivateChat)
 
 chatRouter.post('/chats',fetchAllChats)
 

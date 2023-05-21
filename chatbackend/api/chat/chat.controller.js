@@ -208,8 +208,8 @@ module.exports = {
 
     sendPrivateChat: async (req,res) => {
         try{
-            const {senderId,receaverId,content} = req.body
-            const roomId = senderId>receaverId?senderId+"-"+receaverId:receaverId+"-"+senderId
+            const {roomId} = req.params
+            const {senderId,content} = req.body
             const privateRoomRef = await db.collection('privateroom').doc(roomId)
             await privateRoomRef.collection('messages').doc().set({
                 sender: senderId,
