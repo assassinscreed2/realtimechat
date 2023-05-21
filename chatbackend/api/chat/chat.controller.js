@@ -25,7 +25,8 @@ module.exports = {
             const {userId,name} = req.body
             // create a chat room
             const chatroom = await db.collection('chatroom').doc()
-            await chatroom.set({roomId:"23",
+            await chatroom.set({
+                    roomId:chatroom.id,
                     type:"Group",
                     name:req.body.name,
                     participants:[userId],
@@ -49,14 +50,14 @@ module.exports = {
             const {senderId, content} = req.body
             const messageRef = db.collection('chatroom').doc(roomId).collection('messages').doc()
             await messageRef.set({
-                senderId,
+                sender:senderId,
                 content,
-                timestamp: new Date(),
+                createdAt: new Date(),
             });
 
             res.status(201).json({
                 message:"created",
-                timestamp: new Date()
+                createdAt: new Date()
             })
         }catch(e){
             console.log(e)
