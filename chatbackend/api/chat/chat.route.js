@@ -15,4 +15,6 @@ chatRouter.post('/private/send',sendPrivateChat)
 
 chatRouter.post('/chats',fetchAllChats)
 
+
+
 module.exports = {chatRouter}
