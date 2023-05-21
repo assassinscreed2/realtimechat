@@ -45,20 +45,17 @@ module.exports = {
     // create chat
     createChat: async (req,res) => {
         try{
-            const {roomId, senderId, content} = req.body
-            const messageId = "message1"
-            const messageRef = db.collection('chatroom').doc(roomId).collection('messages').doc(messageId)
+            const roomId = req.params.roomId
+            const {senderId, content} = req.body
+            const messageRef = db.collection('chatroom').doc(roomId).collection('messages').doc()
             await messageRef.set({
-                messageId,
                 senderId,
                 content,
                 timestamp: new Date(),
             });
 
             res.status(201).json({
-                messageId,
-                senderId,
-                content,
+                message:"created",
                 timestamp: new Date()
             })
         }catch(e){
@@ -182,6 +179,7 @@ module.exports = {
               return res.status(200).json({
                 chatId: chatId,
                 createdAt: privateRoomData.createdAt,
+                type: privateRoomData.type,
                 messages: messages
               });
             }
@@ -190,6 +188,7 @@ module.exports = {
             const privateRoomRef = db.collection('privateroom').doc(chatId);
             await privateRoomRef.set({
               chatId,
+              type:"private",
               participants:[senderId,receaverId],
               createdAt: new Date(),
             });
@@ -227,7 +226,6 @@ module.exports = {
 
     fetchAllChats: async (req,res) => {
         try{
-
             const allrooms = []
 
             const userId = req.body.userId
