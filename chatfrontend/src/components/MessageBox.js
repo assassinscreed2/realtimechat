@@ -1,6 +1,3 @@
-
-import { Avatar } from "@mui/material";
-import { deepOrange } from "@mui/material/colors";
 import { createStyles, makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles((theme) =>
@@ -20,7 +17,7 @@ const useStyles = makeStyles((theme) =>
       marginBottom: "10px",
       padding: "10px",
       backgroundColor: "#A8DDFD",
-      width: "60%",
+      width: "100%",
       //height: "50px",
       textAlign: "left",
       font: "400 .9em 'Open Sans', sans-serif",
@@ -33,7 +30,7 @@ const useStyles = makeStyles((theme) =>
       marginBottom: "10px",
       padding: "10px",
       backgroundColor: "#f8e896",
-      width: "60%",
+      width: "50%",
       //height: "50px",
       textAlign: "left",
       font: "400 .9em 'Open Sans', sans-serif",
@@ -64,12 +61,12 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-//avatarが左にあるメッセージ（他人）
+
+
 export const MessageLeft = (props) => {
   const message = props.message ? props.message : "no message";
   const timestamp = props.timestamp ? props.timestamp : "";
-  const photoURL = props.photoURL ? props.photoURL : "dummy.js";
-  const displayName = props.displayName ? props.displayName : "名無しさん";
+  const displayName = props.displayName ? props.displayName : "Dummy";
   const classes = useStyles();
   return (
     <>

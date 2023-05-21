@@ -2,217 +2,73 @@ import React, { useState } from 'react';
 import { makeStyles } from '@mui/styles';
 import { Container, Typography,Paper, TextField, Button, List, ListItem, ListItemText, IconButton, Grid, Divider} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { TextInput } from "./TextInput.js";
-import { MessageLeft, MessageRight } from "./Message";
+
 import firebase from "firebase/app"
 import {getAuth, signInWithPopup, GoogleAuthProvider} from "firebase/auth"
-
-const useStyles = makeStyles((theme) => ({
-  container: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh',
-  },
-  chatContainer: {
-    display: 'flex',
-    width: '600px',
-    height: '500px',
-    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-  },
-  userList: {
-    flex: '0 0 200px',
-    borderRight: `1px solid `,
-  },
-  chatArea: {
-    flex: '1',
-  },
-  listItem: {
-    cursor: 'pointer',
-  },
-  inputContainer: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  textField: {
-  },
-}));
+import UserList from './components/UserList.js';
+import Messages from './components/Messages.js';
 
 function App(){
-  const classes = useStyles();
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [newMessage, setNewMessage] = useState('');
-  const [userList, setUserList] = useState([
-    { id: 1, name: 'User 1' },
-    { id: 2, name: 'User 2' },
-    { id: 3, name: 'User 3' },
-    { id: 4, name: 'User 4' },
-  ]);
+
+  const [auth, setAuth] = useState(true)
+  const [token, setToken] = useState("")
+  const [roomType, setRoomType] = useState()
+  const [roomId, setRoomId] = useState()
+  const [searchText, setSearchText] = useState('');
+  const [roomList, setRoomList] = useState([]);
+  const [selectedRoom, setSelectedRoom] = useState(null);
+
+  const handleInputChange = (event) => {
+    setSearchText(event.target.value);
+  };
+
+  const handleCreateGroup = async ()=>{
+    const createRequest = await fetch(`${process.env.REACT_APP_SERVER}/chat/chatrooms/create`,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({userId:"herokurunner3@gmail.com",name:searchText})
+    })
+
+    const createResponse = await createRequest.json()
+    console.log(createResponse)
+  }
 
   const googleLogin = () => {
     const auth = getAuth()
     const provider = new GoogleAuthProvider()
     signInWithPopup(auth, provider).then((result)=> {
       const credential = GoogleAuthProvider.credentialFromResult(result);
-      console.log(credential)
-      console.log(result)
+      setAuth(true)
+      setToken(credential.idToken)
     }).catch(e=>console.log(e))
   }
 
-  const [searchText, setSearchText] = useState('');
-
-  const handleSearch = () => {
-    console.log("searched")
-  };
-
-  const handleInputChange = (event) => {
-    setSearchText(event.target.value);
-  };
-
-  const handleUserClick = (user) => {
-    setSelectedUser(user);
-  };
-
-  const handleSendMessage = () => {
-    // Implement the logic to send a new message to the selected user
-    // You can use WebSocket or API requests to send the message
-
-    setNewMessage('');
-  };
-
   return (
     <>
-    <Grid container direction = "column">
-      <Grid item>
-        <Typography>Real Time Chat Application</Typography>
-      </Grid>
-      <Grid container direction = "row" >
-        <Grid container direction = "column" sm={3}>
-          <Grid item>
-            <TextField
-              label="Search User"
-              variant="outlined"
-              value={searchText}
-              onChange={handleInputChange}
-            />
-            <IconButton onClick={handleSearch} aria-label="search">
-              <SearchIcon />
-            </IconButton>
-          <Grid item>
-            <List>
-              {userList.map((user) => (
-                <ListItem
-                  key={user.id}
-                  className={classes.listItem}
-                  selected={selectedUser && selectedUser.id === user.id}
-                  onClick={() => handleUserClick(user)}
-                >
-                  <ListItemText primary={user.name} />
-                </ListItem>
-              ))}
-            </List>
+      {
+        auth?<Grid container direction = "column">
+        <Grid item>
+          <Typography>Real Time Chat Application</Typography>
+        </Grid>
+        <Grid container direction = "row" >
+          {/* list of users currently in chat */}
+          <Grid container direction = "column" sm={3}>
+            <UserList token={token} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom} setRoomId={setRoomId} roomList={roomList} setRoomList={setRoomList} setRoomType={setRoomType}/>
           </Grid>
+          <Grid item container direction = "column" sm={8}>
+            {/* button for creating a group */}
+            <Grid item>
+              <TextField label="Enter Group Name" variant="outlined" value={searchText} onChange={handleInputChange}/>
+              <Button onClick={()=>handleCreateGroup()}>Create Group</Button>
+            </Grid>
+            <Messages setRoomId={setRoomId} setRoomType={setRoomType} roomList={roomList} setSelectedRoom={setSelectedRoom} setRoomList={setRoomList} token={token} roomType={roomType} roomId={roomId}/>
           </Grid>
         </Grid>
-        <Grid item container direction = "column" sm={8}>
-          <Grid item>
-            <Button onClick={googleLogin}>Create Group</Button>
-          </Grid>
-          <Grid container direction="column">
-          <Grid item>
-            {selectedUser ? (
-              <>
-                <Typography variant="h6">{selectedUser.name}</Typography>
-                {/* Render the messages with the selected user */}
-                {/* Example: */}
-                {/* {selectedUser.messages.map((message, index) => (
-                  <div key={index}>
-                    <Typography variant="body1">{message.sender}</Typography>
-                    <Typography variant="body2">{message.content}</Typography>
-                  </div>
-                ))} */}
-              </>
-            ) : (
-              <Typography variant="h6">Select a user to start chatting</Typography>
-            )}
-          </Grid>
-          <Grid item style={{overflowY:"auto",minHeight:"28em",maxHeight:"30em"}}>
-            <MessageLeft
-                message="Hi Ankur"
-                timestamp="MM/DD 00:00"
-                displayName="Vikas"
-                avatarDisp={true}
-              />
-              <MessageLeft
-                message="Hello How are you"
-                timestamp="MM/DD 00:00"
-                photoURL=""
-                displayName="Vikas"
-                avatarDisp={false}
-              />
-              <MessageLeft
-                message="Hi Ankur"
-                timestamp="MM/DD 00:00"
-                displayName="Vikas"
-                avatarDisp={true}
-              />
-              <MessageLeft
-                message="Hello How are you"
-                timestamp="MM/DD 00:00"
-                photoURL=""
-                displayName="Vikas"
-                avatarDisp={false}
-              />
-              <MessageLeft
-                message="Hi Ankur"
-                timestamp="MM/DD 00:00"
-                displayName="Vikas"
-                avatarDisp={true}
-              />
-              <MessageLeft
-                message="Hello How are you"
-                timestamp="MM/DD 00:00"
-                photoURL=""
-                displayName="Vikas"
-                avatarDisp={false}
-              />
-              <MessageLeft
-                message="Hi Ankur"
-                timestamp="MM/DD 00:00"
-                displayName="Vikas"
-                avatarDisp={true}
-              />
-              <MessageLeft
-                message="Hello How are you"
-                timestamp="MM/DD 00:00"
-                photoURL=""
-                displayName="Vikas"
-                avatarDisp={false}
-              />
-              <MessageRight
-                message="messageRあめんぼあかいなあいうえおあめんぼあかいなあいうえおあめんぼあかいなあいうえお"
-                timestamp="MM/DD 00:00"
-                photoURL="https://lh3.googleusercontent.com/a-/AOh14Gi4vkKYlfrbJ0QLJTg_DLjcYyyK7fYoWRpz2r4s=s96-c"
-                displayName="まさりぶ"
-                avatarDisp={true}
-              />
-              <MessageRight
-                message="messageRあめんぼあかいなあいうえおあめんぼあかいなあいうえお"
-                timestamp="MM/DD 00:00"
-                photoURL="https://lh3.googleusercontent.com/a-/AOh14Gi4vkKYlfrbJ0QLJTg_DLjcYyyK7fYoWRpz2r4s=s96-c"
-                displayName="まさりぶ"
-                avatarDisp={false}
-              />
-          </Grid>
-          <Grid item>
-            <TextInput />
-          </Grid>
-        </Grid>
-        </Grid>
-      </Grid>
-
-    </Grid>
-    
+      </Grid>:<Button variant='contained' onClick={googleLogin} >Login</Button>
+      }
+      
     </>
     
   );
