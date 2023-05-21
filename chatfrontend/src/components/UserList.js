@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-export default function UserList({setRoomId,setRoomType,roomList,setRoomList,selectedRoom,setSelectedRoom}){
+export default function UserList({userLogged,setRoomId,setRoomType,roomList,setRoomList,selectedRoom,setSelectedRoom}){
     const classes = useStyles();
     
     
@@ -50,7 +50,7 @@ export default function UserList({setRoomId,setRoomType,roomList,setRoomList,sel
         const db = getFirestore()
 
         // query to fetch private chats
-        const q1 = query(collection(db,'privateroom'),where('participants','array-contains','herokurunner3@gmail.com'))
+        const q1 = query(collection(db,'privateroom'),where('participants','array-contains',userLogged.email))
         const unsub1 = onSnapshot(q1, (snapshot)=>{
             //console.log(snapshot)
             snapshot.docChanges().forEach((change)=>{
@@ -65,12 +65,12 @@ export default function UserList({setRoomId,setRoomType,roomList,setRoomList,sel
         })
 
         // query to fetch group chats
-        const q2 = query(collection(db,'chatroom'),where('participants','array-contains','herokurunner3@gmail.com'))
+        const q2 = query(collection(db,'chatroom'),where('participants','array-contains',userLogged.email))
         const unsub2 = onSnapshot(q2, (snapshot)=>{
             //console.log(snapshot)
             snapshot.docChanges().forEach((change)=>{
               const roomData = change.doc.data()
-              const userid = "herokurunner3@gmail.com"
+              const userid = userLogged.email
               if(roomData.participants.includes(userid)){
                 setRoomList((prevRooms) => [...prevRooms,{id:roomData.roomId,
                   createdAt:roomData.createdAt,
@@ -141,7 +141,7 @@ export default function UserList({setRoomId,setRoomType,roomList,setRoomList,sel
 
             {/* search user result */}
             {searchedUser && <Grid item container direction="row" style={{display:searchedUser?"block":"none"}}>
-                <Grid item sm={5} onClick={()=>{if(userFound){handleCreatePrivateRoom({senderId:"herokurunner3@gmail.com",receaverId:searchedUser.email})}else{setSearchedUser(undefined)}}}><Typography>{searchedUser.name}</Typography></Grid>
+                <Grid item sm={5} onClick={()=>{if(userFound){handleCreatePrivateRoom({senderId:userLogged.email,receaverId:searchedUser.email})}else{setSearchedUser(undefined)}}}><Typography>{searchedUser.name}</Typography></Grid>
                 <Grid item sm={5}><CloseIcon onClick={()=>setSearchedUser(undefined)}/></Grid>
             </Grid>}
 

@@ -5,7 +5,7 @@ import {collection, query, where, onSnapshot, getFirestore, orderBy} from "fireb
 import SearchIcon from '@mui/icons-material/Search';
 
 
-export default function Messages({setRoomType,setRoomId,roomType,roomId,setRoomList,roomList,setSelectedRoom}){
+export default function Messages({userLogged,setRoomType,setRoomId,roomType,roomId,setRoomList,roomList,setSelectedRoom}){
 
     const [selectedUser, setSelectedUser] = useState(null);
     const [messages, setMessages] = useState([])
@@ -62,7 +62,7 @@ export default function Messages({setRoomType,setRoomId,roomType,roomId,setRoomL
             headers:{
                 'Content-Type':'application/json'
             },
-            body:JSON.stringify({userId:"herokurunner3@gmail.com"})
+            body:JSON.stringify({userId:userLogged.email})
         })
         const removeResponse = await removeRequest.json()
         const newRoomList = roomList.filter((room)=>room.id != roomId)
@@ -106,7 +106,7 @@ export default function Messages({setRoomType,setRoomId,roomType,roomId,setRoomL
                 headers:{
                     'Content-Type':'application/json'
                 },
-                body:JSON.stringify({senderId:"herokurunner3@gmail.com",content:searchText})
+                body:JSON.stringify({senderId:userLogged.email,content:searchText})
             })
             const sendResult = await sendRequest.json()
             console.log(sendResult)
@@ -116,7 +116,7 @@ export default function Messages({setRoomType,setRoomId,roomType,roomId,setRoomL
                 headers:{
                     'Content-Type':'application/json'
                 },
-                body:JSON.stringify({senderId:"herokurunner3@gmail.com",content:searchText})
+                body:JSON.stringify({senderId:userLogged.email,content:searchText})
             })
             const sendResult = await sendRequest.json()
             console.log(sendResult)
@@ -176,7 +176,7 @@ export default function Messages({setRoomType,setRoomId,roomType,roomId,setRoomL
             <Grid item style={{overflowY:"auto",minHeight:"28em",maxHeight:"30em"}}>
                 {
                     messages.map((message)=>{
-                        if(message.sender !== "herokurunner3@gmail.com"){
+                        if(message.sender !== userLogged.email){
                             return <MessageLeft
                                 message={message.content}
                                 timestamp={message.createdAt.seconds}

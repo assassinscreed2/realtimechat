@@ -10,13 +10,14 @@ import Messages from './components/Messages.js';
 
 function App(){
 
-  const [auth, setAuth] = useState(true)
+  const [auth, setAuth] = useState(false)
   const [token, setToken] = useState("")
   const [roomType, setRoomType] = useState()
   const [roomId, setRoomId] = useState()
   const [searchText, setSearchText] = useState('');
   const [roomList, setRoomList] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState(null);
+  const [userLogged, setUserLogged] = useState()
 
   const handleInputChange = (event) => {
     setSearchText(event.target.value);
@@ -28,7 +29,7 @@ function App(){
       headers:{
         'Content-Type':'application/json'
       },
-      body:JSON.stringify({userId:"herokurunner3@gmail.com",name:searchText})
+      body:JSON.stringify({userId:userLogged.email,name:searchText})
     })
 
     const createResponse = await createRequest.json()
@@ -41,6 +42,10 @@ function App(){
     signInWithPopup(auth, provider).then((result)=> {
       const credential = GoogleAuthProvider.credentialFromResult(result);
       setAuth(true)
+      setUserLogged({email:result.user.email,
+        name:result.user.displayName,
+        photo:result.user.photoURL
+      })
       setToken(credential.idToken)
     }).catch(e=>console.log(e))
   }
@@ -55,7 +60,7 @@ function App(){
         <Grid container direction = "row" >
           {/* list of users currently in chat */}
           <Grid container direction = "column" sm={3}>
-            <UserList token={token} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom} setRoomId={setRoomId} roomList={roomList} setRoomList={setRoomList} setRoomType={setRoomType}/>
+            <UserList userLogged={userLogged} token={token} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom} setRoomId={setRoomId} roomList={roomList} setRoomList={setRoomList} setRoomType={setRoomType}/>
           </Grid>
           <Grid item container direction = "column" sm={8}>
             {/* button for creating a group */}
@@ -63,7 +68,7 @@ function App(){
               <TextField label="Enter Group Name" variant="outlined" value={searchText} onChange={handleInputChange}/>
               <Button onClick={()=>handleCreateGroup()}>Create Group</Button>
             </Grid>
-            <Messages setRoomId={setRoomId} setRoomType={setRoomType} roomList={roomList} setSelectedRoom={setSelectedRoom} setRoomList={setRoomList} token={token} roomType={roomType} roomId={roomId}/>
+            <Messages userLogged={userLogged} setRoomId={setRoomId} setRoomType={setRoomType} roomList={roomList} setSelectedRoom={setSelectedRoom} setRoomList={setRoomList} token={token} roomType={roomType} roomId={roomId}/>
           </Grid>
         </Grid>
       </Grid>:<Button variant='contained' onClick={googleLogin} >Login</Button>
