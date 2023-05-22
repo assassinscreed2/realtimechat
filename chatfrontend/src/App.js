@@ -19,10 +19,7 @@ function App(){
   const [roomList, setRoomList] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [messages, setMessages] = useState([])
-  const [userLogged, setUserLogged] = useState({email:'herokurunner3@gmail.com',
-    name:'Ankur',
-    photo:"image.com"
-  })
+  const [userLogged, setUserLogged] = useState()
 
   const handleInputChange = (event) => {
     setSearchText(event.target.value);
@@ -60,9 +57,7 @@ function App(){
 
   return (
     <>
-      {/* {
-        auth? */}
-        <Grid container direction = "column" alignItems="center" justifyContent="center" style={{backgroundColor:"#DBDFEA",width:"100%",minHeight:"100vh"}}>
+      {auth?<Grid container direction = "column" alignItems="center" justifyContent="center" style={{backgroundColor:"#DBDFEA",width:"100%",minHeight:"100vh"}}>
         <AppBar>
           <Toolbar position="sticky" style={{justifyContent:"center"}}>
           <Typography style={{fontSize:"2rem"}}>Real Time Chat Application</Typography>
@@ -83,9 +78,8 @@ function App(){
             <Messages messages={messages} setMessages={setMessages} selectedUser={selectedUser} userLogged={userLogged} setRoomId={setRoomId} setRoomType={setRoomType} roomList={roomList} setSelectedRoom={setSelectedRoom} setRoomList={setRoomList} token={token} roomType={roomType} roomId={roomId}/>
           </Grid>
         </Grid>
-      </Grid>
-      {/* :<Button variant='contained' onClick={googleLogin} >Login</Button>
-      } */}
+      </Grid>:<Button variant='contained' onClick={googleLogin} >Login</Button>
+      }
       
     </>
     

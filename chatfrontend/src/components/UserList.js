@@ -73,15 +73,13 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
               console.log(change)
               if(change.type === 'added'){
                 const roomData = change.doc.data()
-                const userid = userLogged.email
-                if(roomData.participants.includes(userid)){
-                  const removeArray = roomList.filter((room) => room.id!=roomData.roomId)
-                  console.log(removeArray)
-                  setRoomList((prevRooms) => [...prevRooms,{id:roomData.roomId,
-                    createdAt:roomData.createdAt,
-                    type:roomData.type,
-                    name:roomData.name}])
-                }
+                  const exists = roomList.some((room)=>room.id === roomData.roomId)
+                  if(!exists){
+                    setRoomList((prevRooms) => [...prevRooms,{id:roomData.roomId,
+                      createdAt:roomData.createdAt,
+                      type:roomData.type,
+                      name:roomData.name}])
+                  }
               }
               //console.log(change.doc.data())
           })
@@ -97,6 +95,10 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
     const [searchText, setSearchText] = useState('');
 
     const handleSearch = async () => {
+        if(searchText === userLogged.email){
+          setSearchedUser("Enter Others email")
+          return;
+        }
         if(searchText !== undefined){
             setLoading(true)
             const searchRequest = await fetch(`${process.env.REACT_APP_SERVER}/user/${searchText}`)
@@ -137,11 +139,12 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
 
         const result = await createRequest.json()
 
-        setSelectedUser(roomDetails.name)
-        setSelectedRoom({id:result.chatId,createdAt:result.createdAt,type:result.type,name:result.name})
-        setMessages((prevMessages)=>[...result.messages])
-        setSearchedUser(undefined)
-        console.log(result)
+        // setSelectedUser(roomDetails.name)
+        // setSelectedRoom({id:result.chatId,createdAt:result.createdAt,type:result.type,name:result.name})
+        // setMessages((prevMessages)=>[...result.message])
+        // setRoomId(result.chatId)
+         setSearchedUser(undefined)
+        // console.log(result)
     }
 
     return (
@@ -158,7 +161,7 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
               loading && <Typography>Loading ...</Typography>
             }
             {/* search user result */}
-            {searchedUser && <Grid item container direction="row" alignItems="center" justifyContent="space-around" style={{border:"solid 2px #19A7CE",maxWidth:"90%",marginRight:"1em",marginTop:"0.5em",minHeight:"3em",borderRadius:"5%",display:searchedUser?"flex":"none"}}>
+            {userFound && <Grid item container direction="row" alignItems="center" justifyContent="space-around" style={{border:"solid 2px #19A7CE",maxWidth:"90%",marginRight:"1em",marginTop:"0.5em",minHeight:"3em",borderRadius:"5%",display:searchedUser?"flex":"none"}}>
                 <Grid item sm={10} style={{}} onClick={()=>{if(userFound){handleCreatePrivateRoom({senderId:userLogged.email,receaverId:searchedUser.email,name:searchedUser.name})}else{setSearchedUser(undefined)}}}>
                   <Typography style={{textAlign:"center"}}>{searchedUser.name}</Typography>
                 </Grid>
@@ -166,6 +169,16 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
                   <CloseIcon onClick={()=>setSearchedUser(undefined)}/>
                 </Grid>
             </Grid>}
+            {
+              !userFound && <Grid item container direction="row" alignItems="center" justifyContent="space-around" style={{border:"solid 2px #19A7CE",maxWidth:"90%",marginRight:"1em",marginTop:"0.5em",minHeight:"3em",borderRadius:"5%",display:searchedUser?"flex":"none"}}>
+              <Grid item sm={10} style={{}} onClick={()=>{if(userFound){handleCreatePrivateRoom({senderId:userLogged.email,receaverId:searchedUser.email,name:searchedUser.name})}else{setSearchedUser(undefined)}}}>
+                <Typography style={{textAlign:"center"}}>{searchedUser}</Typography>
+              </Grid>
+              <Grid item sm={2} style={{}}>
+                <CloseIcon onClick={()=>setSearchedUser(undefined)}/>
+              </Grid>
+          </Grid>
+            }
 
             {/* show user chat rooms */}
             <Grid item style={{width:"90%", maxHeight:"35em", overflowY:"auto"}}>

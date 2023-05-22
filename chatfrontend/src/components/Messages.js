@@ -146,24 +146,24 @@ export default function Messages({setMessages,messages,selectedUser,userLogged,s
                     <Button variant="outlined" size="small" onClick={leaveUserFromGroup}>Leave</Button>
                 </Grid>}
             </Grid>
-            <Dialog open={isOpen} onClose={handleClose}>
-                <DialogTitle>Add Item</DialogTitle>
+            <Dialog open={isOpen} onClose={handleClose} >
+                <DialogTitle><Typography>Search User</Typography></DialogTitle>
                 <DialogContent>
-                    <Grid container style={{marginTop:"0.2em"}} spacing={2} alignItems="center">
+                    <Grid container  spacing={2} alignItems="center">
                     <Grid item>
-                        <TextField label="Search User" variant="outlined" value={searchUserText} onChange={handleSearchChange}/>
+                        <TextField size="small" label="Enter user email" variant="outlined" value={searchUserText} onChange={handleSearchChange}/>
                         <IconButton onClick={handleUserSearch} aria-label="search">
                             <SearchIcon />
                         </IconButton>
                     </Grid>
                 </Grid>
-                {userFound && <Grid item container direction="row" style={{display:searchedUser?"block":"none"}}>
-                    <Grid item sm={5} ><Typography>{searchedUser.name}</Typography></Grid>
+                {userFound && <Grid item container direction="row" justifyContent="center" alignItems="center" style={{minHeight:"2em",display:searchedUser?"block":"none",border:"solid 2px #19A7CE"}}>
+                    <Grid item><Typography style={{textAlign:"center"}}>{searchedUser.name}</Typography></Grid>
                 </Grid>}
                 </DialogContent>
                 <DialogActions>
                 <Grid container justifyContent='flex-end' direction = "row">
-                <Button variant="contained" disabled={userFound?false:true} color="primary" onClick={addUserToGroup}>
+                <Button variant="outlined" disabled={userFound?false:true} color="primary" onClick={addUserToGroup}>
                         Add
                     </Button>
                     <Button onClick={handleClose} color="primary">
@@ -173,7 +173,7 @@ export default function Messages({setMessages,messages,selectedUser,userLogged,s
                 
                 </DialogActions>
             </Dialog>
-            <Grid item style={{overflowY:"auto",minHeight:"28em",maxHeight:"30em"}}>
+            <Grid item style={{overflowY:"auto",minHeight:"30em",maxHeight:"30em"}}>
                 {
                     messages.map((message)=>{
                         if(message.sender !== userLogged.email){
