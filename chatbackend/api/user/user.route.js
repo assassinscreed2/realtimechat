@@ -1,8 +1,8 @@
 const express = require('express')
 const UserRouter = express()
 
-const {fetchListOfUser} = require('./user.controller.js')
+const {fetchUser} = require('./user.controller.js')
 
-UserRouter.get('/:useremail',fetchListOfUser)
+UserRouter.get('/:useremail',fetchUser)
 
 module.exports = {UserRouter}

@@ -15,9 +15,10 @@ function App(){
   const [token, setToken] = useState("")
   const [roomType, setRoomType] = useState()
   const [roomId, setRoomId] = useState()
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [roomList, setRoomList] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState(null);
+  const [messages, setMessages] = useState([])
   const [userLogged, setUserLogged] = useState({email:'herokurunner3@gmail.com',
     name:'Ankur',
     photo:"image.com"
@@ -28,16 +29,18 @@ function App(){
   };
 
   const handleCreateGroup = async ()=>{
-    const createRequest = await fetch(`${process.env.REACT_APP_SERVER}/chat/chatrooms/create`,{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json'
-      },
-      body:JSON.stringify({userId:userLogged.email,name:searchText})
-    })
-
-    const createResponse = await createRequest.json()
-    console.log(createResponse)
+    if(searchText.length>0){
+      const createRequest = await fetch(`${process.env.REACT_APP_SERVER}/chat/chatrooms/create`,{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({userId:userLogged.email,name:searchText})
+      })
+  
+      const createResponse = await createRequest.json()
+      console.log(createResponse)
+    }
   }
 
   const googleLogin = () => {
@@ -69,7 +72,7 @@ function App(){
         <Grid container direction = "row" justifyContent="space-around" style={{backgroundColor:"#F6F1F1",maxWidth:"95%"}}>
           {/* list of users currently in chat */}
           <Grid container direction = "column" sm={3} style={{maxWidth:"18em",borderRight:"blue solid 2px",backgroundColor:"#E3F4F4"}}>
-            <UserList setSelectedUser={setSelectedUser} userLogged={userLogged} token={token} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom} setRoomId={setRoomId} roomList={roomList} setRoomList={setRoomList} setRoomType={setRoomType}/>
+            <UserList setMessages={setMessages} setSelectedUser={setSelectedUser} userLogged={userLogged} token={token} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom} setRoomId={setRoomId} roomList={roomList} setRoomList={setRoomList} setRoomType={setRoomType}/>
           </Grid>
           <Grid item container direction = "column" sm={8}>
             {/* button for creating a group */}
@@ -77,7 +80,7 @@ function App(){
               <TextField style={{marginRight:"1em"}} size="small" label="Enter Group Name" variant="outlined" value={searchText} onChange={handleInputChange}/>
               <Button variant="outlined" size='small' onClick={()=>handleCreateGroup()}>Create Group</Button>
             </Grid>
-            <Messages selectedUser={selectedUser} userLogged={userLogged} setRoomId={setRoomId} setRoomType={setRoomType} roomList={roomList} setSelectedRoom={setSelectedRoom} setRoomList={setRoomList} token={token} roomType={roomType} roomId={roomId}/>
+            <Messages messages={messages} setMessages={setMessages} selectedUser={selectedUser} userLogged={userLogged} setRoomId={setRoomId} setRoomType={setRoomType} roomList={roomList} setSelectedRoom={setSelectedRoom} setRoomList={setRoomList} token={token} roomType={roomType} roomId={roomId}/>
           </Grid>
         </Grid>
       </Grid>

@@ -156,7 +156,7 @@ module.exports = {
     // controller for creating a chat room (reqBody: {uesrId,name})
     createPrivateChat: async (req,res) => {
         try {
-            const { senderId, receaverId } = req.body;
+            const { senderId, receaverId, name } = req.body;
 
             const chatId = senderId>receaverId?senderId+"-"+receaverId:receaverId+"-"+senderId
         
@@ -179,6 +179,7 @@ module.exports = {
 
               return res.status(200).json({
                 chatId: chatId,
+                name,
                 createdAt: privateRoomData.createdAt,
                 type: privateRoomData.type,
                 messages: messages
@@ -197,6 +198,8 @@ module.exports = {
             // Return the created chat room details as a response
             res.status(201).json({
                 chatId,
+                name,
+                type:"private",
                 createdAt: new Date(),
                 message: []
             });

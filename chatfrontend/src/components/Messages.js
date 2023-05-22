@@ -5,10 +5,10 @@ import {collection, query, where, onSnapshot, getFirestore, orderBy} from "fireb
 import SearchIcon from '@mui/icons-material/Search';
 
 
-export default function Messages({selectedUser,userLogged,setRoomType,setRoomId,roomType,roomId,setRoomList,roomList,setSelectedRoom}){
+export default function Messages({setMessages,messages,selectedUser,userLogged,setRoomType,setRoomId,roomType,roomId,setRoomList,roomList,setSelectedRoom}){
 
     
-    const [messages, setMessages] = useState([])
+    
     const [searchText, setSearchText] = useState('');
     const [searchUserText, setUserSearchText] = useState('');
     const [isOpen, setIsOpen] = useState(false);

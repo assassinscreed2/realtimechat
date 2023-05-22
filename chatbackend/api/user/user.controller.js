@@ -1,7 +1,8 @@
 const {admin,db} = require('../../db/db.connection')
 
 module.exports = {
-    fetchListOfUser: async (req,res) => {
+    // fetch detail of given user
+    fetchUser: async (req,res) => {
         try{
             const useremail = req.params.useremail
             console.log(useremail)
