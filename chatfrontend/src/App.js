@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { makeStyles, styled } from '@mui/styles';
-import { Container, AppBar, Typography,Paper, TextField, Button, List, ListItem, ListItemText, IconButton, Grid, Divider, Toolbar, Avatar} from '@mui/material';
+import { Container, AppBar, Typography,Paper, TextField, Button, List, ListItem, ListItemText, IconButton, Grid, Divider, Toolbar, Avatar, CircularProgress} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
 import firebase from "firebase/app"
@@ -20,6 +20,7 @@ function App(){
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [messages, setMessages] = useState([])
   const [userLogged, setUserLogged] = useState()
+  const [createGroupLoading, setCreateGroupLoading] = useState()
 
   const handleInputChange = (event) => {
     setSearchText(event.target.value);
@@ -27,6 +28,7 @@ function App(){
 
   const handleCreateGroup = async ()=>{
     if(searchText.length>0){
+      setCreateGroupLoading(true)
       const createRequest = await fetch(`${process.env.REACT_APP_SERVER}/chat/chatrooms/create`,{
         method:'POST',
         headers:{
@@ -36,6 +38,7 @@ function App(){
       })
   
       const createResponse = await createRequest.json()
+      setCreateGroupLoading(false)
       console.log(createResponse)
     }
   }
@@ -81,8 +84,9 @@ function App(){
           <Grid item container direction = "column" sm={8}>
             {/* button for creating a group */}
             <Grid item container direction="row" justifyContent="flex-end" alignItems="center" style={{minHeight:"3em",marginTop:"0.5em",borderBottom:"solid 2px #B0DAFF"}}>
+              {createGroupLoading && <CircularProgress />}
               <TextField style={{marginRight:"1em"}} size="small" label="Enter Group Name" variant="outlined" value={searchText} onChange={handleInputChange}/>
-              <Button variant="outlined" size='small' onClick={()=>handleCreateGroup()}>Create Group</Button>
+              <Button disabled={createGroupLoading} variant="outlined" size='small' onClick={()=>handleCreateGroup()}>Create Group</Button>
             </Grid>
             <Messages setSelectedUser={setSelectedUser} messages={messages} setMessages={setMessages} selectedUser={selectedUser} userLogged={userLogged} setRoomId={setRoomId} setRoomType={setRoomType} roomList={roomList} setSelectedRoom={setSelectedRoom} setRoomList={setRoomList} token={token} roomType={roomType} roomId={roomId}/>
           </Grid>
