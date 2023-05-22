@@ -5,9 +5,9 @@ import {collection, query, where, onSnapshot, getFirestore, orderBy} from "fireb
 import SearchIcon from '@mui/icons-material/Search';
 
 
-export default function Messages({userLogged,setRoomType,setRoomId,roomType,roomId,setRoomList,roomList,setSelectedRoom}){
+export default function Messages({selectedUser,userLogged,setRoomType,setRoomId,roomType,roomId,setRoomList,roomList,setSelectedRoom}){
 
-    const [selectedUser, setSelectedUser] = useState(null);
+    
     const [messages, setMessages] = useState([])
     const [searchText, setSearchText] = useState('');
     const [searchUserText, setUserSearchText] = useState('');
@@ -133,17 +133,17 @@ export default function Messages({userLogged,setRoomType,setRoomId,roomType,room
 
     return (
         <Grid container direction="column">
-            <Grid item container direction = "row">
-                <Grid item>
+            <Grid item container direction = "row" justifyContent="space-between">
+                <Grid item style={{marginTop:"0.5em",borderBottom:"solid 2px #AFD3E2"}}>
                     {selectedUser ? (
-                        <Typography variant="h6">{selectedUser.name}</Typography>
+                        <Typography variant="h6">{selectedUser}</Typography>
                     ) : (
                     <Typography variant="h6">Select a user to start chatting</Typography>
                     )}
                 </Grid>
-                {roomType && roomType === 'Group' && <Grid item>
-                    <Button onClick={handleOpen}>Add Member</Button>
-                    <Button onClick={leaveUserFromGroup}>Leave</Button>
+                {roomType && roomType === 'Group' && <Grid item style={{marginTop:"0.5em"}}>
+                    <Button variant="outlined" size="small" style={{marginRight:"1em"}} onClick={handleOpen}>Add Member</Button>
+                    <Button variant="outlined" size="small" onClick={leaveUserFromGroup}>Leave</Button>
                 </Grid>}
             </Grid>
             <Dialog open={isOpen} onClose={handleClose}>

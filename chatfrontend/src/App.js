@@ -11,6 +11,7 @@ import Messages from './components/Messages.js';
 function App(){
 
   const [auth, setAuth] = useState(false)
+  const [selectedUser, setSelectedUser] = useState(null);
   const [token, setToken] = useState("")
   const [roomType, setRoomType] = useState()
   const [roomId, setRoomId] = useState()
@@ -58,25 +59,25 @@ function App(){
     <>
       {/* {
         auth? */}
-        <Grid container direction = "column">
+        <Grid container direction = "column" alignItems="center" justifyContent="center" style={{backgroundColor:"#DBDFEA",width:"100%",minHeight:"100vh"}}>
         <AppBar>
           <Toolbar position="sticky" style={{justifyContent:"center"}}>
           <Typography style={{fontSize:"2rem"}}>Real Time Chat Application</Typography>
           </Toolbar>
         </AppBar>
         <Toolbar />
-        <Grid container direction = "row" >
+        <Grid container direction = "row" justifyContent="space-around" style={{backgroundColor:"#F6F1F1",maxWidth:"95%"}}>
           {/* list of users currently in chat */}
           <Grid container direction = "column" sm={3} style={{maxWidth:"18em",borderRight:"blue solid 2px",backgroundColor:"#E3F4F4"}}>
-            <UserList userLogged={userLogged} token={token} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom} setRoomId={setRoomId} roomList={roomList} setRoomList={setRoomList} setRoomType={setRoomType}/>
+            <UserList setSelectedUser={setSelectedUser} userLogged={userLogged} token={token} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom} setRoomId={setRoomId} roomList={roomList} setRoomList={setRoomList} setRoomType={setRoomType}/>
           </Grid>
           <Grid item container direction = "column" sm={8}>
             {/* button for creating a group */}
-            <Grid item>
-              <TextField label="Enter Group Name" variant="outlined" value={searchText} onChange={handleInputChange}/>
-              <Button onClick={()=>handleCreateGroup()}>Create Group</Button>
+            <Grid item container direction="row" justifyContent="flex-end" alignItems="center" style={{minHeight:"3em",marginTop:"0.5em",borderBottom:"solid 2px #B0DAFF"}}>
+              <TextField style={{marginRight:"1em"}} size="small" label="Enter Group Name" variant="outlined" value={searchText} onChange={handleInputChange}/>
+              <Button variant="outlined" size='small' onClick={()=>handleCreateGroup()}>Create Group</Button>
             </Grid>
-            <Messages userLogged={userLogged} setRoomId={setRoomId} setRoomType={setRoomType} roomList={roomList} setSelectedRoom={setSelectedRoom} setRoomList={setRoomList} token={token} roomType={roomType} roomId={roomId}/>
+            <Messages selectedUser={selectedUser} userLogged={userLogged} setRoomId={setRoomId} setRoomType={setRoomType} roomList={roomList} setSelectedRoom={setSelectedRoom} setRoomList={setRoomList} token={token} roomType={roomType} roomId={roomId}/>
           </Grid>
         </Grid>
       </Grid>
