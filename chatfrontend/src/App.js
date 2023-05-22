@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@mui/styles';
-import { Container, Typography,Paper, TextField, Button, List, ListItem, ListItemText, IconButton, Grid, Divider} from '@mui/material';
+import { makeStyles, styled } from '@mui/styles';
+import { Container, AppBar, Typography,Paper, TextField, Button, List, ListItem, ListItemText, IconButton, Grid, Divider, Toolbar} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
 import firebase from "firebase/app"
@@ -17,7 +17,10 @@ function App(){
   const [searchText, setSearchText] = useState('');
   const [roomList, setRoomList] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState(null);
-  const [userLogged, setUserLogged] = useState()
+  const [userLogged, setUserLogged] = useState({email:'herokurunner3@gmail.com',
+    name:'Ankur',
+    photo:"image.com"
+  })
 
   const handleInputChange = (event) => {
     setSearchText(event.target.value);
@@ -46,20 +49,25 @@ function App(){
         name:result.user.displayName,
         photo:result.user.photoURL
       })
+      console.log(userLogged)
       setToken(credential.idToken)
     }).catch(e=>console.log(e))
   }
 
   return (
     <>
-      {
-        auth?<Grid container direction = "column">
-        <Grid item>
-          <Typography>Real Time Chat Application</Typography>
-        </Grid>
+      {/* {
+        auth? */}
+        <Grid container direction = "column">
+        <AppBar>
+          <Toolbar position="sticky" style={{justifyContent:"center"}}>
+          <Typography style={{fontSize:"2rem"}}>Real Time Chat Application</Typography>
+          </Toolbar>
+        </AppBar>
+        <Toolbar />
         <Grid container direction = "row" >
           {/* list of users currently in chat */}
-          <Grid container direction = "column" sm={3}>
+          <Grid container direction = "column" sm={3} style={{maxWidth:"18em",borderRight:"blue solid 2px",backgroundColor:"#E3F4F4"}}>
             <UserList userLogged={userLogged} token={token} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom} setRoomId={setRoomId} roomList={roomList} setRoomList={setRoomList} setRoomType={setRoomType}/>
           </Grid>
           <Grid item container direction = "column" sm={8}>
@@ -71,8 +79,9 @@ function App(){
             <Messages userLogged={userLogged} setRoomId={setRoomId} setRoomType={setRoomType} roomList={roomList} setSelectedRoom={setSelectedRoom} setRoomList={setRoomList} token={token} roomType={roomType} roomId={roomId}/>
           </Grid>
         </Grid>
-      </Grid>:<Button variant='contained' onClick={googleLogin} >Login</Button>
-      }
+      </Grid>
+      {/* :<Button variant='contained' onClick={googleLogin} >Login</Button>
+      } */}
       
     </>
     
