@@ -47,11 +47,13 @@ module.exports = {
     createChat: async (req,res) => {
         try{
             const roomId = req.params.roomId
-            const {senderId, content} = req.body
+            const {senderId, content, name, profilePic} = req.body
             const messageRef = db.collection('chatroom').doc(roomId).collection('messages').doc()
             await messageRef.set({
                 sender:senderId,
                 content,
+                name,
+                profilePic,
                 createdAt: new Date(),
             });
 
@@ -214,10 +216,12 @@ module.exports = {
     sendPrivateChat: async (req,res) => {
         try{
             const {roomId} = req.params
-            const {senderId,content} = req.body
+            const {senderId,content,profilePic,name} = req.body
             const privateRoomRef = await db.collection('privateroom').doc(roomId)
             await privateRoomRef.collection('messages').doc().set({
                 sender: senderId,
+                profilePic,
+                name,
                 content: content,
                 createdAt: new Date()
             })

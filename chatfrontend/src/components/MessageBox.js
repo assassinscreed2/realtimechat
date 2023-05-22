@@ -1,3 +1,4 @@
+import { Avatar, Typography } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles((theme) =>
@@ -13,29 +14,30 @@ const useStyles = makeStyles((theme) =>
       minHeight:"2.6em",
       minWidth:"10em",
       position: "relative",
-      marginLeft: "20px",
+      marginLeft: "0.2em",
       marginBottom: "10px",
       padding: "10px",
-      backgroundColor: "#A8DDFD",
+      backgroundColor:"#E6FFFD",
       width: "100%",
-      //height: "50px",
       textAlign: "left",
       font: "400 .9em 'Open Sans', sans-serif",
-      border: "1px solid #97C6E3",
+      border: "5px solid #ACBCFF",
       borderRadius: "10px",
+      overflowWrap: "break-word"
     },
     messageOrange: {
       position: "relative",
       marginRight: "20px",
       marginBottom: "10px",
       padding: "10px",
-      backgroundColor: "#f8e896",
+      backgroundColor: "#E5F9DB",
       width: "50%",
       //height: "50px",
       textAlign: "left",
       font: "400 .9em 'Open Sans', sans-serif",
-      border: "1px solid #dfd087",
-      borderRadius: "10px"    
+      border: "5px solid #AEE2FF",
+      borderRadius: "10px",
+      overflowWrap: "break-word"  
     },
 
     messageContent: {
@@ -47,13 +49,9 @@ const useStyles = makeStyles((theme) =>
       fontSize: ".85em",
       fontWeight: "300",
       marginTop: "10px",
+      marginBottom: "6px",
       bottom: "-3px",
       right: "5px"
-    },
-
-    avatarNothing: {
-      color: "transparent",
-      backgroundColor: "transparent",
     },
     displayName: {
       marginLeft: "20px"
@@ -63,37 +61,62 @@ const useStyles = makeStyles((theme) =>
 
 
 
-export const MessageLeft = (props) => {
-  const message = props.message ? props.message : "no message";
-  const timestamp = props.timestamp ? props.timestamp : "";
-  const displayName = props.displayName ? props.displayName : "Dummy";
+export const MessageLeft = ({message}) => {
+  // message={message.content}
+  //                               timestamp={message.createdAt.seconds}
+  //                               displayName={message.name}
+  //                               avatar={message.profilePic}
   const classes = useStyles();
+  function formatTime(seconds) {
+    const date = new Date(seconds * 1000);
+    const formattedTime = date.toLocaleString('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+      day: '2-digit',
+      month: '2-digit',
+    });
+    return formattedTime;
+  }
+
   return (
     <>
       <div className={classes.messageRow}>
-        <div>
-          <div className={classes.displayName}>{displayName}</div>
-          <div className={classes.messageBlue}>
+        <Avatar src={message.profilePic}/>
+        <div style={{maxWidth:"50%"}}>
+          <Typography style={{fontSize:"0.7em",marginLeft:"0.8em"}}>{message.name}</Typography>
+          <div  className={classes.messageBlue}>
             <div>
-              <p className={classes.messageContent}>{message}</p>
+            <Typography style={{fontSize:"1em"}}>{message.content}</Typography>
             </div>
-            <div className={classes.messageTimeStampRight}>{timestamp}</div>
+            <div className={classes.messageTimeStampRight}>{formatTime(message.createdAt.seconds)}</div>
           </div>
         </div>
       </div>
     </>
   );
 };
-//avatarが右にあるメッセージ（自分）
-export const MessageRight = (props) => {
+
+export const MessageRight = ({message}) => {
   const classes = useStyles();
-  const message = props.message ? props.message : "no message";
-  const timestamp = props.timestamp ? props.timestamp : "";
+
+  function formatTime(seconds) {
+    const date = new Date(seconds * 1000);
+    const formattedTime = date.toLocaleString('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+      day: '2-digit',
+      month: '2-digit',
+    });
+    return formattedTime;
+  }
+
   return (
     <div className={classes.messageRowRight}>
       <div className={classes.messageOrange}>
-        <p className={classes.messageContent}>{message}</p>
-        <div className={classes.messageTimeStampRight}>{timestamp}</div>
+        <Typography style={{fontSize:"1em"}}>{message.content}</Typography>
+        <div className={classes.messageTimeStampRight}>{formatTime(message.createdAt.seconds)}</div>
       </div>
     </div>
   );

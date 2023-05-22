@@ -84,7 +84,7 @@ export default function Messages({setSelectedUser,setMessages,messages,selectedU
             const unsub2 = onSnapshot(q2, (snapshot)=>{
                 console.log(snapshot)
                 snapshot.docChanges().forEach((change)=>{
-                    console.log(change.doc.data())
+                    console.log("messages",change.doc.data())
                     setMessages((prevMessages)=>[...prevMessages,change.doc.data()])
                 })
             })
@@ -99,13 +99,14 @@ export default function Messages({setSelectedUser,setMessages,messages,selectedU
     // send message handler
     const sendMessage = async () => {
         const collectionName = roomType == 'Group'?'chatroom':'privateroom'
+        console.log(userLogged)
         if(collectionName === 'privateroom'){
             const sendRequest = await fetch(`${process.env.REACT_APP_SERVER}/chat/${roomId}/private/send`,{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json'
                 },
-                body:JSON.stringify({senderId:userLogged.email,content:searchText})
+                body:JSON.stringify({senderId:userLogged.email,profilePic:userLogged.photo,name:userLogged.name,content:searchText})
             })
             const sendResult = await sendRequest.json()
             console.log(sendResult)
@@ -115,7 +116,7 @@ export default function Messages({setSelectedUser,setMessages,messages,selectedU
                 headers:{
                     'Content-Type':'application/json'
                 },
-                body:JSON.stringify({senderId:userLogged.email,content:searchText})
+                body:JSON.stringify({senderId:userLogged.email,profilePic:userLogged.photo,name:userLogged.name,content:searchText})
             })
             const sendResult = await sendRequest.json()
             console.log(sendResult)
@@ -172,23 +173,13 @@ export default function Messages({setSelectedUser,setMessages,messages,selectedU
                 
                 </DialogActions>
             </Dialog>
-            <Grid item style={{overflowY:"auto",minHeight:"30em",maxHeight:"30em"}}>
+            <Grid item style={{overflowY:"auto",minHeight:"30em",maxHeight:"30em",marginTop:"1em"}}>
                 {
                     messages.map((message)=>{
                         if(message.sender !== userLogged.email){
-                            return <MessageLeft
-                                message={message.content}
-                                timestamp={message.createdAt.seconds}
-                                displayName={message.senderId}
-                                avatarDisp={true}
-                            />
+                            return <MessageLeft message={message}/>
                         }else{
-                            return <MessageRight
-                                    message={message.content}
-                                    timestamp={message.createdAt.seconds}
-                                    displayName={message.senderId}
-                                    avatarDisp={true}
-                                />
+                            return <MessageRight message={message}/>
                         }
                     })
                 }
