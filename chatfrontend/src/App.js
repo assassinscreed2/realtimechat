@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { makeStyles, styled } from '@mui/styles';
-import { Container, AppBar, Typography,Paper, TextField, Button, List, ListItem, ListItemText, IconButton, Grid, Divider, Toolbar} from '@mui/material';
+import { Container, AppBar, Typography,Paper, TextField, Button, List, ListItem, ListItemText, IconButton, Grid, Divider, Toolbar, Avatar} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
 import firebase from "firebase/app"
@@ -60,7 +60,16 @@ function App(){
       {auth?<Grid container direction = "column" alignItems="center" justifyContent="center" style={{backgroundColor:"#DBDFEA",width:"100%",minHeight:"100vh"}}>
         <AppBar>
           <Toolbar position="sticky" style={{justifyContent:"center"}}>
-          <Typography style={{fontSize:"2rem"}}>Real Time Chat Application</Typography>
+              <Grid container direction = "row">
+                <Grid item sm><Typography style={{fontSize:"2rem",marginLeft:"2em"}}>Real Time Chat Application</Typography></Grid>
+                <Grid item container sm alignItems="center" justifyContent="flex-end">
+                  <Grid item style={{marginRight:"1em"}}>
+                    <Avatar src={userLogged.photo}/>
+                  </Grid>
+                  <Grid item>
+                    <Typography>{userLogged.name}</Typography></Grid>
+                  </Grid>
+              </Grid>
           </Toolbar>
         </AppBar>
         <Toolbar />

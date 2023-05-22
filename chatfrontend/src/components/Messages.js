@@ -1,4 +1,4 @@
-import { Button, Dialog, IconButton, DialogActions, DialogContent, DialogTitle, Grid, TextField, Typography} from "@mui/material";
+import { Button, Dialog, IconButton, DialogActions, DialogContent, DialogTitle, Grid, TextField, Typography, CircularProgress, Backdrop} from "@mui/material";
 import { MessageLeft, MessageRight } from "./MessageBox";
 import React, { useEffect, useState } from 'react';
 import {collection, query, where, onSnapshot, getFirestore, orderBy} from "firebase/firestore"
@@ -13,6 +13,8 @@ export default function Messages({setSelectedUser,setMessages,messages,selectedU
     const [textFieldValue, setTextFieldValue] = useState('');
     const [userFound,setUserFound] = useState()
     const [searchedUser, setSearchedUser] = useState()
+    const [dialogUserLoading, setDialogUserLoading] = useState(false)
+    const [messageLoading, setMessageLoading] = useState(false)
 
     const handleOpen = () => {
         setIsOpen(true);
@@ -28,15 +30,17 @@ export default function Messages({setSelectedUser,setMessages,messages,selectedU
 
     const handleUserSearch = async () => {
         if(searchText !== undefined){
+            setDialogUserLoading(true)
             console.log(process.env.REACT_APP_SERVER)
             const searchRequest = await fetch(`${process.env.REACT_APP_SERVER}/user/${searchUserText}`)
             const userdata = await searchRequest.json()
             if(userdata.email){
-                setUserFound(true)
-                console.log(userdata)
                 setSearchedUser(userdata)
+                setUserFound(true)
+                setDialogUserLoading(false)
             }else{
                 setSearchedUser("User not Registered")
+                setDialogUserLoading(false)
             }
         }
     };
@@ -78,6 +82,7 @@ export default function Messages({setSelectedUser,setMessages,messages,selectedU
         // query to fetch group chats
         if(roomType && roomId){
             setMessages([])
+            setMessageLoading(true)
             const collectionName = roomType === "Group"?'chatroom':'privateroom'
             console.log(roomId)
             const q2 = query(collection(db,collectionName,roomId,"messages"),orderBy("createdAt","asc"))
@@ -89,6 +94,7 @@ export default function Messages({setSelectedUser,setMessages,messages,selectedU
                 })
             })
     
+            setMessageLoading(false)
             return ()=>{
                 unsub2();
             }
@@ -133,6 +139,7 @@ export default function Messages({setSelectedUser,setMessages,messages,selectedU
 
     return (
         <Grid container direction="column">
+            {messageLoading && <Backdrop />}
             <Grid item container direction = "row" justifyContent="space-between">
                 <Grid item style={{marginTop:"0.5em",borderBottom:"solid 2px #AFD3E2"}}>
                     {selectedUser ? (
@@ -149,14 +156,19 @@ export default function Messages({setSelectedUser,setMessages,messages,selectedU
             <Dialog open={isOpen} onClose={handleClose} >
                 <DialogTitle><Typography>Search User</Typography></DialogTitle>
                 <DialogContent>
-                    <Grid container  spacing={2} alignItems="center">
+                    <Grid container justifyContent="center" spacing={2} alignItems="center">
                     <Grid item>
                         <TextField size="small" label="Enter user email" variant="outlined" value={searchUserText} onChange={handleSearchChange}/>
                         <IconButton onClick={handleUserSearch} aria-label="search">
                             <SearchIcon />
                         </IconButton>
                     </Grid>
+                    
                 </Grid>
+                {/* loading */}
+                {
+                    dialogUserLoading && <CircularProgress style={{margintTop:"0.3em"}} />
+                }
                 {userFound && <Grid item container direction="row" justifyContent="center" alignItems="center" style={{minHeight:"2em",display:searchedUser?"block":"none",border:"solid 2px #19A7CE"}}>
                     <Grid item><Typography style={{textAlign:"center"}}>{searchedUser.name}</Typography></Grid>
                 </Grid>}

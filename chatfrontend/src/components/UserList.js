@@ -125,11 +125,8 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
     };
 
     const handleUserClick = (room) => {
-        console.log(room)
-        console.log(roomList)
         setRoomId(room.id)
         setRoomType(room.type)
-        console.log(room.name)
         setSelectedUser(room.name)
         setSelectedRoom(room);
     };
