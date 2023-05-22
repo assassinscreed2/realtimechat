@@ -190,6 +190,7 @@ module.exports = {
             const privateRoomRef = db.collection('privateroom').doc(chatId);
             await privateRoomRef.set({
               chatId,
+              name,
               type:"private",
               participants:[senderId,receaverId],
               createdAt: new Date(),

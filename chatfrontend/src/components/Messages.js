@@ -5,9 +5,7 @@ import {collection, query, where, onSnapshot, getFirestore, orderBy} from "fireb
 import SearchIcon from '@mui/icons-material/Search';
 
 
-export default function Messages({setMessages,messages,selectedUser,userLogged,setRoomType,setRoomId,roomType,roomId,setRoomList,roomList,setSelectedRoom}){
-
-    
+export default function Messages({setSelectedUser,setMessages,messages,selectedUser,userLogged,setRoomType,setRoomId,roomType,roomId,setRoomList,roomList,setSelectedRoom}){
     
     const [searchText, setSearchText] = useState('');
     const [searchUserText, setUserSearchText] = useState('');
@@ -71,6 +69,7 @@ export default function Messages({setMessages,messages,selectedUser,userLogged,s
         setMessages([])
         setRoomId(undefined)
         setRoomType(undefined)
+        setSelectedUser(null)
         console.log(removeResponse)
     }
 

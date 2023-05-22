@@ -1,5 +1,5 @@
 import { makeStyles } from '@mui/styles';
-import { TextField, List, ListItem, ListItemText, IconButton, Grid, Typography} from '@mui/material';
+import { TextField,CircularProgress , List, ListItem, ListItemText, IconButton, Grid, Typography} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import React, { useState, useEffect} from 'react';
 import CloseIcon from '@mui/icons-material/Close';
@@ -43,7 +43,7 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
     const [userFound,setUserFound] = useState()
     const [newMessage, setNewMessage] = useState('')
     const [searchedUser, setSearchedUser] = useState()
-    const [loading,setLoading] = useState(false)
+    const [userSearchLoading,setUserSearchLoading] = useState(false)
     
 
     useEffect(()=>{
@@ -57,10 +57,11 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
             //console.log(snapshot)
             snapshot.docChanges().forEach((change)=>{
                 const roomData = change.doc.data()
+                console.log(roomData)
                 setRoomList((prevRooms) => [...prevRooms,{id:roomData.chatId,
                     createdAt:roomData.createdAt,
                     type:roomData.type,
-                    name:roomData.participants[1]}])
+                    name:roomData.name}])
                 //console.log(change.doc.data())
             })
         })
@@ -73,6 +74,7 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
               console.log(change)
               if(change.type === 'added'){
                 const roomData = change.doc.data()
+                console.log(roomData)
                   const exists = roomList.some((room)=>room.id === roomData.roomId)
                   if(!exists){
                     setRoomList((prevRooms) => [...prevRooms,{id:roomData.roomId,
@@ -100,18 +102,21 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
           return;
         }
         if(searchText !== undefined){
-            setLoading(true)
+            setUserSearchLoading(true)
             const searchRequest = await fetch(`${process.env.REACT_APP_SERVER}/user/${searchText}`)
             const userdata = await searchRequest.json()
-            console.log(userdata)
+            console.log("userdata",userdata)
             if(userdata.email){
-                setUserFound(true)
-                setLoading(false)
                 setSearchedUser(userdata)
+                setUserSearchLoading(false)
+                setUserFound(true)
+                
             }else{
-                setLoading(false)
+                setUserSearchLoading(false)
                 setSearchedUser("User not Registered")
             }
+
+            console.log(searchedUser)
         }
     };
 
@@ -121,20 +126,24 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
 
     const handleUserClick = (room) => {
         console.log(room)
+        console.log(roomList)
         setRoomId(room.id)
         setRoomType(room.type)
+        console.log(room.name)
         setSelectedUser(room.name)
         setSelectedRoom(room);
     };
 
     // create a private chat room between selecter user and loggedin user
     const handleCreatePrivateRoom = async (roomDetails) => {
+      console.log("roomDetails",roomDetails)
+        
         const createRequest = await fetch(`${process.env.REACT_APP_SERVER}/chat/private/create`,{
             method: 'POST',
             headers:{
                 'Content-Type':"application/json"
             },
-            body: JSON.stringify(roomDetails)
+            body: JSON.stringify({senderId:userLogged.email,receaverId:roomDetails.email,name:roomDetails.name})
         })
 
         const result = await createRequest.json()
@@ -144,7 +153,7 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
         // setMessages((prevMessages)=>[...result.message])
         // setRoomId(result.chatId)
          setSearchedUser(undefined)
-        // console.log(result)
+        console.log(result)
     }
 
     return (
@@ -158,19 +167,19 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
             </Grid>
             {/* loading */}
             {
-              loading && <Typography>Loading ...</Typography>
+              userSearchLoading && <CircularProgress style={{margintTop:"0.3em"}} />
             }
             {/* search user result */}
-            {userFound && <Grid item container direction="row" alignItems="center" justifyContent="space-around" style={{border:"solid 2px #19A7CE",maxWidth:"90%",marginRight:"1em",marginTop:"0.5em",minHeight:"3em",borderRadius:"5%",display:searchedUser?"flex":"none"}}>
-                <Grid item sm={10} style={{}} onClick={()=>{if(userFound){handleCreatePrivateRoom({senderId:userLogged.email,receaverId:searchedUser.email,name:searchedUser.name})}else{setSearchedUser(undefined)}}}>
+            {userFound && searchedUser && <Grid item container direction="row" alignItems="center" justifyContent="space-around" style={{border:"solid 2px #19A7CE",maxWidth:"90%",marginRight:"1em",marginTop:"0.5em",minHeight:"3em",borderRadius:"5%",display:searchedUser?"flex":"none"}}>
+                <Grid item sm={10} style={{}} onClick={()=>{if(userFound){console.log("searchedUser",searchedUser);handleCreatePrivateRoom(searchedUser)}else{setSearchedUser(undefined)}}}>
                   <Typography style={{textAlign:"center"}}>{searchedUser.name}</Typography>
                 </Grid>
                 <Grid item sm={2} style={{}}>
-                  <CloseIcon onClick={()=>setSearchedUser(undefined)}/>
+                  <CloseIcon onClick={()=>{setSearchedUser(undefined); setUserFound(undefined)}}/>
                 </Grid>
             </Grid>}
             {
-              !userFound && <Grid item container direction="row" alignItems="center" justifyContent="space-around" style={{border:"solid 2px #19A7CE",maxWidth:"90%",marginRight:"1em",marginTop:"0.5em",minHeight:"3em",borderRadius:"5%",display:searchedUser?"flex":"none"}}>
+              !userFound && searchedUser && <Grid item container direction="row" alignItems="center" justifyContent="space-around" style={{border:"solid 2px #19A7CE",maxWidth:"90%",marginRight:"1em",marginTop:"0.5em",minHeight:"3em",borderRadius:"5%",display:searchedUser?"flex":"none"}}>
               <Grid item sm={10} style={{}} onClick={()=>{if(userFound){handleCreatePrivateRoom({senderId:userLogged.email,receaverId:searchedUser.email,name:searchedUser.name})}else{setSearchedUser(undefined)}}}>
                 <Typography style={{textAlign:"center"}}>{searchedUser}</Typography>
               </Grid>

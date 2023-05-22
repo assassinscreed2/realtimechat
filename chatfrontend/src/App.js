@@ -75,7 +75,7 @@ function App(){
               <TextField style={{marginRight:"1em"}} size="small" label="Enter Group Name" variant="outlined" value={searchText} onChange={handleInputChange}/>
               <Button variant="outlined" size='small' onClick={()=>handleCreateGroup()}>Create Group</Button>
             </Grid>
-            <Messages messages={messages} setMessages={setMessages} selectedUser={selectedUser} userLogged={userLogged} setRoomId={setRoomId} setRoomType={setRoomType} roomList={roomList} setSelectedRoom={setSelectedRoom} setRoomList={setRoomList} token={token} roomType={roomType} roomId={roomId}/>
+            <Messages setSelectedUser={setSelectedUser} messages={messages} setMessages={setMessages} selectedUser={selectedUser} userLogged={userLogged} setRoomId={setRoomId} setRoomType={setRoomType} roomList={roomList} setSelectedRoom={setSelectedRoom} setRoomList={setRoomList} token={token} roomType={roomType} roomId={roomId}/>
           </Grid>
         </Grid>
       </Grid>:<Button variant='contained' onClick={googleLogin} >Login</Button>
