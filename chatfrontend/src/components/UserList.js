@@ -41,11 +41,10 @@ export default function UserList({token,setMessages,setSelectedUser,userLogged,s
     const classes = useStyles();
     
     const [userFound,setUserFound] = useState()
-    const [newMessage, setNewMessage] = useState('')
     const [searchedUser, setSearchedUser] = useState()
     const [userSearchLoading,setUserSearchLoading] = useState(false)
     const [roomListLoading,setRoomListLoading] = useState(false)
-    
+    const [searchText, setSearchText] = useState('');
 
     useEffect(()=>{
       console.log(userLogged)
@@ -99,8 +98,8 @@ export default function UserList({token,setMessages,setSelectedUser,userLogged,s
       }
     },[userLogged])
 
-    const [searchText, setSearchText] = useState('');
-
+    
+    // hanlder for searching user details
     const handleSearch = async () => {
         if(searchText === userLogged.email){
           setSearchedUser("Enter Others email")
@@ -130,10 +129,12 @@ export default function UserList({token,setMessages,setSelectedUser,userLogged,s
         }
     };
 
+    // hanlder for tracking user text in searchUser field
     const handleInputChange = (event) => {
         setSearchText(event.target.value);
     };
 
+    // handler for setting current room on click
     const handleUserClick = (room) => {
         setRoomId(room.id)
         setRoomType(room.type)
@@ -155,11 +156,6 @@ export default function UserList({token,setMessages,setSelectedUser,userLogged,s
         })
 
         const result = await createRequest.json()
-
-        // setSelectedUser(roomDetails.name)
-        // setSelectedRoom({id:result.chatId,createdAt:result.createdAt,type:result.type,name:result.name})
-        // setMessages((prevMessages)=>[...result.message])
-        // setRoomId(result.chatId)
          setSearchedUser(undefined)
         console.log(result)
     }

@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme) =>
       padding: "10px",
       backgroundColor: "#E5F9DB",
       width: "50%",
-      //height: "50px",
       textAlign: "left",
       font: "400 .9em 'Open Sans', sans-serif",
       border: "5px solid #AEE2FF",
@@ -60,13 +59,11 @@ const useStyles = makeStyles((theme) =>
 );
 
 
-
+// other uesr message UI
 export const MessageLeft = ({message}) => {
-  // message={message.content}
-  //                               timestamp={message.createdAt.seconds}
-  //                               displayName={message.name}
-  //                               avatar={message.profilePic}
   const classes = useStyles();
+
+  // converts seconds into required format
   function formatTime(seconds) {
     const date = new Date(seconds * 1000);
     const formattedTime = date.toLocaleString('en-US', {
@@ -97,6 +94,7 @@ export const MessageLeft = ({message}) => {
   );
 };
 
+// user message UI
 export const MessageRight = ({message}) => {
   const classes = useStyles();
 

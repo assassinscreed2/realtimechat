@@ -11,80 +11,11 @@ export default function Messages({token,setSelectedUser,setMessages,messages,sel
     const [searchText, setSearchText] = useState('');
     const [searchUserText, setUserSearchText] = useState('');
     const [isOpen, setIsOpen] = useState(false);
-    const [textFieldValue, setTextFieldValue] = useState('');
     const [userFound,setUserFound] = useState()
     const [searchedUser, setSearchedUser] = useState()
     const [dialogUserLoading, setDialogUserLoading] = useState(false)
     const [messageLoading, setMessageLoading] = useState(false)
     const [sendMessageLoading, setSendMessageLoading] = useState(false)
-
-    const handleOpen = () => {
-        setIsOpen(true);
-    };
-
-    const handleClose = () => {
-        setIsOpen(false);
-    };
-
-    const handleTextFieldChange = (event) => {
-        setTextFieldValue(event.target.value);
-    };
-
-    const handleUserSearch = async () => {
-        if(searchText !== undefined){
-            setDialogUserLoading(true)
-            console.log(process.env.REACT_APP_SERVER)
-            const searchRequest = await fetch(`${process.env.REACT_APP_SERVER}/user/${searchUserText}`,{
-                method:'GET',
-                headers:{
-                    'authorization':`Bearer ${token}`
-                }
-            })
-            const userdata = await searchRequest.json()
-            if(userdata.email){
-                setSearchedUser(userdata)
-                setUserFound(true)
-                setDialogUserLoading(false)
-            }else{
-                setSearchedUser("User not Registered")
-                setDialogUserLoading(false)
-            }
-        }
-    };
-
-    const addUserToGroup = async () => {
-        const addRequest = await fetch(`${process.env.REACT_APP_SERVER}/chat/chatrooms/${roomId}/join`,{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json',
-                'authorization':`Bearer ${token}`
-            },
-            body:JSON.stringify({userId:searchedUser.email})
-        })
-        const addResponse = await addRequest.json()
-        console.log(addResponse)
-        setIsOpen(false)
-    }
-
-    const leaveUserFromGroup = async () => {
-        const removeRequest = await fetch(`${process.env.REACT_APP_SERVER}/chat/chatrooms/${roomId}/leave`,{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json',
-                'authorization':`Bearer ${token}`
-            },
-            body:JSON.stringify({userId:userLogged.email})
-        })
-        const removeResponse = await removeRequest.json()
-        const newRoomList = roomList.filter((room)=>room.id != roomId)
-        setRoomList((prevRoomList) => [...newRoomList])
-        setSelectedRoom(null)
-        setMessages([])
-        setRoomId(undefined)
-        setRoomType(undefined)
-        setSelectedUser(null)
-        console.log(removeResponse)
-    }
 
     useEffect(()=>{
         const db = getFirestore()
@@ -110,6 +41,74 @@ export default function Messages({token,setSelectedUser,setMessages,messages,sel
         }
         
     },[roomId])
+
+    // handlers for opeing dialog box (add member)
+    const handleOpen = () => {
+        setIsOpen(true);
+    };
+
+    const handleClose = () => {
+        setIsOpen(false);
+    };
+
+    // handler for searching user infomation
+    const handleUserSearch = async () => {
+        if(searchText !== undefined){
+            setDialogUserLoading(true)
+            console.log(process.env.REACT_APP_SERVER)
+            const searchRequest = await fetch(`${process.env.REACT_APP_SERVER}/user/${searchUserText}`,{
+                method:'GET',
+                headers:{
+                    'authorization':`Bearer ${token}`
+                }
+            })
+            const userdata = await searchRequest.json()
+            if(userdata.email){
+                setSearchedUser(userdata)
+                setUserFound(true)
+                setDialogUserLoading(false)
+            }else{
+                setSearchedUser("User not Registered")
+                setDialogUserLoading(false)
+            }
+        }
+    };
+
+    // handler for adding user to group
+    const addUserToGroup = async () => {
+        const addRequest = await fetch(`${process.env.REACT_APP_SERVER}/chat/chatrooms/${roomId}/join`,{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'authorization':`Bearer ${token}`
+            },
+            body:JSON.stringify({userId:searchedUser.email})
+        })
+        const addResponse = await addRequest.json()
+        console.log(addResponse)
+        setIsOpen(false)
+    }
+
+    // handler for removing user from group
+    const leaveUserFromGroup = async () => {
+        const removeRequest = await fetch(`${process.env.REACT_APP_SERVER}/chat/chatrooms/${roomId}/leave`,{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'authorization':`Bearer ${token}`
+            },
+            body:JSON.stringify({userId:userLogged.email})
+        })
+        const removeResponse = await removeRequest.json()
+        const newRoomList = roomList.filter((room)=>room.id != roomId)
+        setRoomList((prevRoomList) => [...newRoomList])
+        setSelectedRoom(null)
+        setMessages([])
+        setRoomId(undefined)
+        setRoomType(undefined)
+        setSelectedUser(null)
+        console.log(removeResponse)
+    }
 
     // send message handler
     const sendMessage = async () => {
@@ -143,6 +142,7 @@ export default function Messages({token,setSelectedUser,setMessages,messages,sel
         }
     }
 
+    // hanlders for tracking user typing text
     const handleInputChange = (event) => {
         setSearchText(event.target.value);
     };

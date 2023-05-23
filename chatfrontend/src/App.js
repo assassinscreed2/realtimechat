@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
-import { makeStyles, styled } from '@mui/styles';
-import { Container, AppBar, Typography,Paper, TextField, Button, List, ListItem, ListItemText, IconButton, Grid, Divider, Toolbar, Avatar, CircularProgress, Backdrop} from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
+import {AppBar, Typography,Paper, TextField, Button, Grid, Toolbar, Avatar, CircularProgress} from '@mui/material';
 import GoogleButton from 'react-google-button'
 
-import firebase from "firebase/app"
 import {getAuth, signInWithPopup, GoogleAuthProvider} from "firebase/auth"
 import UserList from './components/UserList.js';
 import Messages from './components/Messages.js';
@@ -23,10 +20,12 @@ function App(){
   const [userLogged, setUserLogged] = useState()
   const [createGroupLoading, setCreateGroupLoading] = useState()
 
+  // handler for tracking user text in addGroup field
   const handleInputChange = (event) => {
     setSearchText(event.target.value);
   };
 
+  // hanlder for creating a group
   const handleCreateGroup = async ()=>{
     if(searchText.length>0){
       setCreateGroupLoading(true)
@@ -45,6 +44,7 @@ function App(){
     }
   }
 
+  // google login handler
   const googleLogin = () => {
     const auth = getAuth()
     const provider = new GoogleAuthProvider()

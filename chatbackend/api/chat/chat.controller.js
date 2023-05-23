@@ -1,24 +1,6 @@
 const {admin,db} = require('../../db/db.connection')
 
 module.exports = {
-    // controller for fetching all chatrooms of a user
-    // fetchChatRooms : async () => {
-    //     try{
-    //         const userId = req.body.userId
-    //         const snapshot = await db.collection('chatroom').where('participants','array-contains',userId).get()
-            
-    //         const chatRooms = []
-    //         snapshot.forEach((doc)=>{
-    //             chatRooms.push(doc['_fieldsProto'])
-    //         })
-    
-    //         return res.json({response:chatRooms});
-    //     }catch(e){
-    //         console.log(e)
-    //         res.json({e});
-    //     }
-    // },
-
     // controller for creating a chat room (reqBody: {uesrId,name})
     createChatRoom: async (req,res) => {
         try{
