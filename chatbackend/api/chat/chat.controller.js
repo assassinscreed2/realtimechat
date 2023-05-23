@@ -110,33 +110,6 @@ module.exports = {
         }
     },
 
-    // controller for fetching all chatrooms of a user
-    fetchPrivateChat : async (req,res) => {
-        try{
-            // Extract necessary data from the request body
-            const { roomId, senderId, content } = req.body;
-
-            // Create a new message document in the Messages subcollection of the specified chat room
-            const messageRef = db.collection('privateroom').doc(roomId).collection('messages').doc();
-            await messageRef.set({
-            senderId,
-            content,
-            createdAt: new Date(),
-            });
-
-            // Return the created message details as a response
-            res.status(201).json({
-            senderId,
-            content,
-            createdAt: new Date(),
-            });
-        } catch (error) {
-            // Handle any errors that occur during the process
-            console.error('Error sending private message:', error);
-            res.status(500).json({ error: 'Failed to send private message' });
-        }
-    },
-
     // controller for creating a chat room (reqBody: {uesrId,name})
     createPrivateChat: async (req,res) => {
         try {
@@ -214,28 +187,4 @@ module.exports = {
             res.json({e})
         }
     },
-
-    fetchAllChats: async (req,res) => {
-        try{
-            const allrooms = []
-
-            const userId = req.body.userId
-            const snapshot = await db.collection('chatroom').where('participants','array-contains',userId).get()
-            
-            snapshot.forEach((doc)=>{
-                allrooms.push(doc.data())
-            })
-
-            const privateChatRoom = await db.collection('privateroom').where('participants','array-contains',userId).get()
-
-            privateChatRoom.forEach((doc)=>{
-                allrooms.push(doc.data())
-            })
-
-            return res.status(200).json(allrooms);
-        }catch(e){
-            console.log(e)
-            res.json({e});
-        }
-    }
 }

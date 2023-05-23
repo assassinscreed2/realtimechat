@@ -40,7 +40,6 @@ function App(){
   
       const createResponse = await createRequest.json()
       setCreateGroupLoading(false)
-      console.log(createResponse)
     }
   }
 
@@ -55,7 +54,6 @@ function App(){
         name:result.user.displayName,
         photo:result.user.photoURL
       })
-      console.log(userLogged)
       auth.currentUser.getIdToken().then((idtoken)=>{
         setToken(idtoken)
       })

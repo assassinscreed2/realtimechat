@@ -24,12 +24,10 @@ export default function Messages({token,setSelectedUser,setMessages,messages,sel
             setMessages([])
             setMessageLoading(true)
             const collectionName = roomType === "Group"?'chatroom':'privateroom'
-            console.log(roomId)
+            
             const q2 = query(collection(db,collectionName,roomId,"messages"),orderBy("createdAt","asc"))
             const unsub2 = onSnapshot(q2, (snapshot)=>{
-                console.log(snapshot)
                 snapshot.docChanges().forEach((change)=>{
-                    console.log("messages",change.doc.data())
                     setMessages((prevMessages)=>[...prevMessages,change.doc.data()])
                 })
             })
@@ -55,7 +53,6 @@ export default function Messages({token,setSelectedUser,setMessages,messages,sel
     const handleUserSearch = async () => {
         if(searchText !== undefined){
             setDialogUserLoading(true)
-            console.log(process.env.REACT_APP_SERVER)
             const searchRequest = await fetch(`${process.env.REACT_APP_SERVER}/user/${searchUserText}`,{
                 method:'GET',
                 headers:{
@@ -85,7 +82,6 @@ export default function Messages({token,setSelectedUser,setMessages,messages,sel
             body:JSON.stringify({userId:searchedUser.email})
         })
         const addResponse = await addRequest.json()
-        console.log(addResponse)
         setIsOpen(false)
     }
 
@@ -107,13 +103,12 @@ export default function Messages({token,setSelectedUser,setMessages,messages,sel
         setRoomId(undefined)
         setRoomType(undefined)
         setSelectedUser(null)
-        console.log(removeResponse)
     }
 
     // send message handler
     const sendMessage = async () => {
         const collectionName = roomType == 'Group'?'chatroom':'privateroom'
-        console.log(userLogged)
+        
         setSendMessageLoading(true)
         if(collectionName === 'privateroom'){
             const sendRequest = await fetch(`${process.env.REACT_APP_SERVER}/chat/${roomId}/private/send`,{
@@ -126,7 +121,6 @@ export default function Messages({token,setSelectedUser,setMessages,messages,sel
             })
             const sendResult = await sendRequest.json()
             setSendMessageLoading(false)
-            console.log(sendResult)
         }else{
             const sendRequest = await fetch(`${process.env.REACT_APP_SERVER}/chat/chatrooms/${roomId}/chat/send`,{
                 method:'POST',
@@ -138,7 +132,6 @@ export default function Messages({token,setSelectedUser,setMessages,messages,sel
             })
             const sendResult = await sendRequest.json()
             setSendMessageLoading(false)
-            console.log(sendResult)
         }
     }
 
