@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { makeStyles, styled } from '@mui/styles';
 import { Container, AppBar, Typography,Paper, TextField, Button, List, ListItem, ListItemText, IconButton, Grid, Divider, Toolbar, Avatar, CircularProgress, Backdrop} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import GoogleButton from 'react-google-button'
 
 import firebase from "firebase/app"
 import {getAuth, signInWithPopup, GoogleAuthProvider} from "firebase/auth"
@@ -64,23 +65,31 @@ function App(){
 
   return (
     <>
-      {auth?<Grid container direction = "column" alignItems="center" justifyContent="center" style={{backgroundColor:"#DBDFEA",width:"100%",minHeight:"100vh"}}>
+      <Grid container direction = "column" alignItems="center" justifyContent="center" style={{backgroundColor:"#DBDFEA",width:"100%",minHeight:"100vh"}}>
         <AppBar>
           <Toolbar position="sticky" style={{justifyContent:"center"}}>
               <Grid container direction = "row">
-                <Grid item sm><Typography style={{fontSize:"2rem",marginLeft:"2em"}}>Real Time Chat Application</Typography></Grid>
-                <Grid item container sm alignItems="center" justifyContent="flex-end">
+                <Grid item sm>
+                  <Typography style={{fontSize:"2rem",marginLeft:"2em"}}>
+                    Real Time Chat Application
+                  </Typography>
+                </Grid>
+                {auth && <Grid item container sm alignItems="center" justifyContent="flex-end">
                   <Grid item style={{marginRight:"1em"}}>
                     <Avatar src={userLogged.photo}/>
                   </Grid>
                   <Grid item>
-                    <Typography>{userLogged.name}</Typography></Grid>
+                    <Typography>
+                      {userLogged.name}
+                    </Typography>
                   </Grid>
+                </Grid>}
               </Grid>
           </Toolbar>
         </AppBar>
         <Toolbar />
-        <Grid container direction = "row" justifyContent="space-around" style={{backgroundColor:"#F6F1F1",maxWidth:"95%"}}>
+
+      {auth?<Grid container direction = "row" justifyContent="space-around" style={{backgroundColor:"#F6F1F1",maxWidth:"95%"}}>
           {/* list of users currently in chat */}
           <Grid container direction = "column" sm={3} style={{maxWidth:"18em",borderRight:"blue solid 2px",backgroundColor:"#E3F4F4"}}>
             <UserList token={token} setMessages={setMessages} setSelectedUser={setSelectedUser} userLogged={userLogged} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom} setRoomId={setRoomId} roomList={roomList} setRoomList={setRoomList} setRoomType={setRoomType}/>
@@ -94,13 +103,12 @@ function App(){
             </Grid>
             <Messages token={token} setSelectedUser={setSelectedUser} messages={messages} setMessages={setMessages} selectedUser={selectedUser} userLogged={userLogged} setRoomId={setRoomId} setRoomType={setRoomType} roomList={roomList} setSelectedRoom={setSelectedRoom} setRoomList={setRoomList} roomType={roomType} roomId={roomId}/>
           </Grid>
-        </Grid>
-      </Grid>:<Button variant='contained' onClick={googleLogin} >Login</Button>
+        </Grid>:<GoogleButton style={{borderRadius:"5%"}} onClick={googleLogin} />
       }
-      
+      </Grid>
     </>
     
   );
-};
+}
 
 export default App;
