@@ -46,6 +46,7 @@ export default function UserList({token,setMessages,setSelectedUser,userLogged,s
     const [roomListLoading,setRoomListLoading] = useState(false)
     const [searchText, setSearchText] = useState('');
 
+    // fetching room lists
     useEffect(()=>{
       console.log(userLogged)
       if(userLogged){
@@ -62,7 +63,7 @@ export default function UserList({token,setMessages,setSelectedUser,userLogged,s
                 setRoomList((prevRooms) => [...prevRooms,{id:roomData.chatId,
                     createdAt:roomData.createdAt,
                     type:roomData.type,
-                    name:roomData.name}])
+                    name:roomData.users.user1.email === userLogged.email?roomData.users.user2.name:roomData.users.user1.name}])
                 //console.log(change.doc.data())
             })
             setRoomListLoading(false)
@@ -152,7 +153,7 @@ export default function UserList({token,setMessages,setSelectedUser,userLogged,s
                 'Content-Type':"application/json",
                 'authorization':`Bearer ${token}`
             },
-            body: JSON.stringify({senderId:userLogged.email,receaverId:roomDetails.email,name:roomDetails.name})
+            body: JSON.stringify({senderId:userLogged.email,receaverId:roomDetails.email,users:{user1:{name:roomDetails.name,email:roomDetails.email},user2:{name:userLogged.name,email:userLogged.email}}})
         })
 
         const result = await createRequest.json()

@@ -140,7 +140,7 @@ module.exports = {
     // controller for creating a chat room (reqBody: {uesrId,name})
     createPrivateChat: async (req,res) => {
         try {
-            const { senderId, receaverId, name } = req.body;
+            const { senderId, receaverId, users } = req.body;
 
             const chatId = senderId>receaverId?senderId+"-"+receaverId:receaverId+"-"+senderId
         
@@ -163,7 +163,7 @@ module.exports = {
 
               return res.status(200).json({
                 chatId: chatId,
-                name,
+                users,
                 createdAt: privateRoomData.createdAt,
                 type: privateRoomData.type,
                 messages: messages
@@ -174,7 +174,7 @@ module.exports = {
             const privateRoomRef = db.collection('privateroom').doc(chatId);
             await privateRoomRef.set({
               chatId,
-              name,
+              users,
               type:"private",
               participants:[senderId,receaverId],
               createdAt: new Date(),
@@ -183,7 +183,7 @@ module.exports = {
             // Return the created chat room details as a response
             res.status(201).json({
                 chatId,
-                name,
+                users,
                 type:"private",
                 createdAt: new Date(),
                 message: []
