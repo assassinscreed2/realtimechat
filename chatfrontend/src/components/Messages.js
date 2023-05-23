@@ -3,9 +3,10 @@ import { MessageLeft, MessageRight } from "./MessageBox";
 import React, { useEffect, useState } from 'react';
 import {collection, query, where, onSnapshot, getFirestore, orderBy} from "firebase/firestore"
 import SearchIcon from '@mui/icons-material/Search';
+import SendIcon from '@mui/icons-material/Send';
 
 
-export default function Messages({setSelectedUser,setMessages,messages,selectedUser,userLogged,setRoomType,setRoomId,roomType,roomId,setRoomList,roomList,setSelectedRoom}){
+export default function Messages({token,setSelectedUser,setMessages,messages,selectedUser,userLogged,setRoomType,setRoomId,roomType,roomId,setRoomList,roomList,setSelectedRoom}){
     
     const [searchText, setSearchText] = useState('');
     const [searchUserText, setUserSearchText] = useState('');
@@ -15,6 +16,7 @@ export default function Messages({setSelectedUser,setMessages,messages,selectedU
     const [searchedUser, setSearchedUser] = useState()
     const [dialogUserLoading, setDialogUserLoading] = useState(false)
     const [messageLoading, setMessageLoading] = useState(false)
+    const [sendMessageLoading, setSendMessageLoading] = useState(false)
 
     const handleOpen = () => {
         setIsOpen(true);
@@ -32,7 +34,12 @@ export default function Messages({setSelectedUser,setMessages,messages,selectedU
         if(searchText !== undefined){
             setDialogUserLoading(true)
             console.log(process.env.REACT_APP_SERVER)
-            const searchRequest = await fetch(`${process.env.REACT_APP_SERVER}/user/${searchUserText}`)
+            const searchRequest = await fetch(`${process.env.REACT_APP_SERVER}/user/${searchUserText}`,{
+                method:'GET',
+                headers:{
+                    'authorization':`Bearer ${token}`
+                }
+            })
             const userdata = await searchRequest.json()
             if(userdata.email){
                 setSearchedUser(userdata)
@@ -49,7 +56,8 @@ export default function Messages({setSelectedUser,setMessages,messages,selectedU
         const addRequest = await fetch(`${process.env.REACT_APP_SERVER}/chat/chatrooms/${roomId}/join`,{
             method:'POST',
             headers:{
-                'Content-Type':'application/json'
+                'Content-Type':'application/json',
+                'authorization':`Bearer ${token}`
             },
             body:JSON.stringify({userId:searchedUser.email})
         })
@@ -62,7 +70,8 @@ export default function Messages({setSelectedUser,setMessages,messages,selectedU
         const removeRequest = await fetch(`${process.env.REACT_APP_SERVER}/chat/chatrooms/${roomId}/leave`,{
             method:'POST',
             headers:{
-                'Content-Type':'application/json'
+                'Content-Type':'application/json',
+                'authorization':`Bearer ${token}`
             },
             body:JSON.stringify({userId:userLogged.email})
         })
@@ -106,25 +115,30 @@ export default function Messages({setSelectedUser,setMessages,messages,selectedU
     const sendMessage = async () => {
         const collectionName = roomType == 'Group'?'chatroom':'privateroom'
         console.log(userLogged)
+        setSendMessageLoading(true)
         if(collectionName === 'privateroom'){
             const sendRequest = await fetch(`${process.env.REACT_APP_SERVER}/chat/${roomId}/private/send`,{
                 method:'POST',
                 headers:{
-                    'Content-Type':'application/json'
+                    'Content-Type':'application/json',
+                    'authorization':`Bearer ${token}`
                 },
                 body:JSON.stringify({senderId:userLogged.email,profilePic:userLogged.photo,name:userLogged.name,content:searchText})
             })
             const sendResult = await sendRequest.json()
+            setSendMessageLoading(false)
             console.log(sendResult)
         }else{
             const sendRequest = await fetch(`${process.env.REACT_APP_SERVER}/chat/chatrooms/${roomId}/chat/send`,{
                 method:'POST',
                 headers:{
-                    'Content-Type':'application/json'
+                    'Content-Type':'application/json',
+                    'authorization':`Bearer ${token}`
                 },
                 body:JSON.stringify({senderId:userLogged.email,profilePic:userLogged.photo,name:userLogged.name,content:searchText})
             })
             const sendResult = await sendRequest.json()
+            setSendMessageLoading(false)
             console.log(sendResult)
         }
     }
@@ -139,7 +153,7 @@ export default function Messages({setSelectedUser,setMessages,messages,selectedU
 
     return (
         <Grid container direction="column">
-            {messageLoading && <Backdrop />}
+            {<Backdrop open={messageLoading}/>}
             <Grid item container direction = "row" justifyContent="space-between">
                 <Grid item style={{marginTop:"0.5em",borderBottom:"solid 2px #AFD3E2"}}>
                     {selectedUser ? (
@@ -201,13 +215,13 @@ export default function Messages({setSelectedUser,setMessages,messages,selectedU
                     id="standard-text"
                     label="Enter Message"
                     style={{width:"100%"}}
-                    //margin="normal"
                     value={searchText} onChange={handleInputChange}
                 />
                 <Button variant="contained" color="primary" onClick={()=>{sendMessage()}}>
-                    <SearchIcon />
+                    {sendMessageLoading?<CircularProgress />:<SendIcon />}
                 </Button>
-            </Grid>}
+            </Grid>
+            }
         </Grid>
         
     )

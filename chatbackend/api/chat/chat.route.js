@@ -1,6 +1,6 @@
 const express = require('express')
 const chatRouter = express.Router()
-const {fetchChatRooms,sendPrivateChat,fetchAllChats,fetchPrivateChat,createPrivateChat,leaveChatRoom,joinChatRoom,createChatRoom,createChat,fetchChatByRoomId} = require('./chat.controller')
+const {sendPrivateChat,fetchAllChats,createPrivateChat,leaveChatRoom,joinChatRoom,createChatRoom,createChat,fetchChatByRoomId} = require('./chat.controller')
 
 //chatRouter.post('/chatrooms',fetchChatRooms)
 chatRouter.post('/chatrooms/create',createChatRoom)
@@ -14,7 +14,5 @@ chatRouter.post('/private/create',createPrivateChat)
 chatRouter.post('/:roomId/private/send',sendPrivateChat)
 
 chatRouter.post('/chats',fetchAllChats)
-
-
 
 module.exports = {chatRouter}

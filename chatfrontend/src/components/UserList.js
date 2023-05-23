@@ -37,13 +37,14 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-export default function UserList({setMessages,setSelectedUser,userLogged,setRoomId,setRoomType,roomList,setRoomList,selectedRoom,setSelectedRoom}){
+export default function UserList({token,setMessages,setSelectedUser,userLogged,setRoomId,setRoomType,roomList,setRoomList,selectedRoom,setSelectedRoom}){
     const classes = useStyles();
     
     const [userFound,setUserFound] = useState()
     const [newMessage, setNewMessage] = useState('')
     const [searchedUser, setSearchedUser] = useState()
     const [userSearchLoading,setUserSearchLoading] = useState(false)
+    const [roomListLoading,setRoomListLoading] = useState(false)
     
 
     useEffect(()=>{
@@ -54,6 +55,7 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
         // query to fetch private chats
         const q1 = query(collection(db,'privateroom'),where('participants','array-contains',userLogged.email))
         const unsub1 = onSnapshot(q1, (snapshot)=>{
+            setRoomListLoading(true)
             //console.log(snapshot)
             snapshot.docChanges().forEach((change)=>{
                 const roomData = change.doc.data()
@@ -64,11 +66,13 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
                     name:roomData.name}])
                 //console.log(change.doc.data())
             })
+            setRoomListLoading(false)
         })
 
         // query to fetch group chats
         const q2 = query(collection(db,'chatroom'),where('participants','array-contains',userLogged.email))
         const unsub2 = onSnapshot(q2, (snapshot)=>{
+            setRoomListLoading(true)
             //console.log(snapshot)
             snapshot.docChanges().forEach((change)=>{
               console.log(change)
@@ -84,7 +88,8 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
                   }
               }
               //console.log(change.doc.data())
-          })
+            })
+            setRoomListLoading(false)
         })
         
         return ()=>{
@@ -103,7 +108,12 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
         }
         if(searchText !== undefined){
             setUserSearchLoading(true)
-            const searchRequest = await fetch(`${process.env.REACT_APP_SERVER}/user/${searchText}`)
+            const searchRequest = await fetch(`${process.env.REACT_APP_SERVER}/user/${searchText}`,{
+              method:'GET',
+              headers:{
+                'authorization':`Bearer ${token}`
+              }
+            })
             const userdata = await searchRequest.json()
             console.log("userdata",userdata)
             if(userdata.email){
@@ -138,7 +148,8 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
         const createRequest = await fetch(`${process.env.REACT_APP_SERVER}/chat/private/create`,{
             method: 'POST',
             headers:{
-                'Content-Type':"application/json"
+                'Content-Type':"application/json",
+                'authorization':`Bearer ${token}`
             },
             body: JSON.stringify({senderId:userLogged.email,receaverId:roomDetails.email,name:roomDetails.name})
         })
@@ -187,7 +198,11 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
             }
 
             {/* show user chat rooms */}
-            <Grid item style={{width:"90%", maxHeight:"35em", overflowY:"auto"}}>
+            {
+              roomListLoading && <CircularProgress />
+            }
+            {
+              !roomListLoading && <Grid item style={{width:"90%", maxHeight:"35em", overflowY:"auto"}}>
               <List>
                 {roomList.map((room) => (
                   <ListItem
@@ -201,6 +216,7 @@ export default function UserList({setMessages,setSelectedUser,userLogged,setRoom
                 ))}
               </List>
             </Grid>
+            }
           </Grid>
     )
 }
